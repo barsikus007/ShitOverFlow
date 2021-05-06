@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Shit Overflow{% endblock %}
+{% block title_og %}Shit Overflow - Where Developers Learn, Share, & Build Careers{% endblock %}
+{% block desc_og %}Shit Overflow | The World’s Largest Online Community for Developers{% endblock %}
+
+{% block main %}
+<div class="d-flex justify-content-between pt-3">
+        <h4>Top Questions</h4>
+        <div class="pb-3">
+            <button type="button" class="btn btn-primary btn-sm">
+                <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
+            </button>
+        </div>
+</div>
+{% for question in questions*2 %}
+<div class="question bg-light p-2">
+
+    <div class="row">
+{#        <div class="col-2 d-flex">#}
+{#            <div class="p-2 bd-highlight border border-warning">{{ question.score }} votes</div>#}
+{#            <div class="p-2 bd-highlight border border-warning">{{ question.answers_count }} answers</div>#}
+{#        </div>#}
+        <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
+            <div title="{{ question.score }} votes">{{ question.score }}</div>
+            <div>votes</div>
+        </div>
+
+        <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
+            <div title="{{ question.score }} answers">{{ question.answers_count }}</div>
+            <div>answers</div>
+        </div>
+
+        <div class="col-9">
+            <div class="row">
+                <h3 class="question-text">
+                    <a href="/questions/{{ question.id }}" class="question-hyperlink">{{ question.title }}</a>
+                </h3>
+            </div>
+
+            <div class="row">
+                <div class="col-5">
+                    {% if question.tags %}
+                        {% for tag in question.tags.split(',') %}
+                            <span class="badge text-dark" style="background: #E1ECF4;">
+                    {{ tag }}
+                </span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div class="col-7 d-flex flex-row-reverse">
+                    <a class="link-dark" href="/questions/{{ question.id }}" style="text-decoration: none;">Created
+                        at {{ question.created_at.strftime('%H:%M %d.%m.%Y') }} by {{ question.author }}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+{% endfor %}
+{% endblock %}

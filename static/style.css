@@ -1,0 +1,90 @@
+.question-hyperlink {
+    line-height: 1.3;
+    margin-bottom: 1.2em;
+    font-size: 20px;
+    text-decoration: none;
+    font-weight: 400;
+}
+
+.link-dark {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.comment-button {
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.comment-text {
+    min-height: 80px;
+}
+
+.counter, .score, .answers {
+    padding-top: 10px;
+    text-align: center;
+    height: 40px;
+    min-width: 40px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.answer-cell {
+    min-height: 120px;
+}
+
+.container {
+    max-width: 720px;
+}
+
+body {
+    padding-top: 4.5rem;
+}
+
+.comment-vote-count {
+    font-size: 10px;
+}
+
+.comment-vote-count, .vote-count {
+    padding-left: 18px;
+}
+
+.vote {
+    font-size: 25px;
+}
+
+.arrow-down, .arrow-up {
+    border: none;
+    outline: none;
+    background: none;
+}
+
+#inputPassword5 {
+    border: none;
+    background: none;
+    outline: none;
+}
+
+.comment-text {
+    font-size: 12px;
+}
+
+.text-field {
+    white-space: pre-line;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+/*.votes, .answers{*/
+/*  padding-top: 10px;*/
+/*  text-align: center;*/
+/*  height: 40px;*/
+/*  min-width: 40px;*/
+/*  font-size: 18px;*/
+/*}*/
+
+/*body, .answers {*/
+/*  padding-top: 4.5rem;*/
+/*}*/
