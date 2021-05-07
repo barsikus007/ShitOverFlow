@@ -45,10 +45,6 @@ body {
     font-size: 10px;
 }
 
-.comment-vote-count, .vote-count {
-    padding-left: 18px;
-}
-
 .vote {
     font-size: 25px;
 }

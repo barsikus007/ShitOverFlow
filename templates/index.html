@@ -6,21 +6,28 @@
 
 {% block main %}
 <div class="d-flex justify-content-between pt-3">
-        <h4>Top Questions</h4>
-        <div class="pb-3">
-            <button type="button" class="btn btn-primary btn-sm">
-                <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
-            </button>
-        </div>
+    <h4>Top Questions</h4>
+    <div class="pb-3">
+        <button type="button" class="btn btn-primary btn-sm">
+            <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
+        </button>
+    </div>
 </div>
 {% for question in questions*2 %}
 <div class="question bg-light p-2">
 
     <div class="row">
-{#        <div class="col-2 d-flex">#}
-{#            <div class="p-2 bd-highlight border border-warning">{{ question.score }} votes</div>#}
-{#            <div class="p-2 bd-highlight border border-warning">{{ question.answers_count }} answers</div>#}
-{#        </div>#}
+        {#
+        <div class="col-2 d-flex">#}
+            {#
+            <div class="p-2 bd-highlight border border-warning">{{ question.score }} votes</div>
+            #}
+            {#
+            <div class="p-2 bd-highlight border border-warning">{{ question.answers_count }} answers</div>
+            #}
+            {#
+        </div>
+        #}
         <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
             <div title="{{ question.score }} votes">{{ question.score }}</div>
             <div>votes</div>
@@ -41,11 +48,11 @@
             <div class="row">
                 <div class="col-5">
                     {% if question.tags %}
-                        {% for tag in question.tags.split(',') %}
-                            <span class="badge text-dark" style="background: #E1ECF4;">
+                    {% for tag in question.tags.split(',') %}
+                    <span class="badge text-dark" style="background: #E1ECF4;">
                     {{ tag }}
                 </span>
-                        {% endfor %}
+                    {% endfor %}
                     {% endif %}
                 </div>
 
@@ -59,4 +66,36 @@
 </div>
 <br>
 {% endfor %}
+<div class="pages">
+    <div class="row d-flex justify-content-center">
+        <div class="col-auto">
+            <div class="clickable button-prev">
+                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor"
+                     class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                </svg>
+            </div>
+        </div>
+
+        <div class="col-auto page-number" style="font-size: 18px;">
+            1
+        </div>
+
+
+        <div class="col-auto">
+            <div class="clickable button-next">
+                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor"
+                     class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                </svg>
+            </div>
+        </div>
+    </
+    >
+</div>
+</div>
 {% endblock %}
+
+
+
+
