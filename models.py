@@ -14,74 +14,74 @@ class ResponseSuccess(BaseModel):
 
 
 class PostTypeQA(str, Enum):
-    question = "question"
-    answer = "answer"
+    question = 'question'
+    answer = 'answer'
 
 
 class PostType(str, Enum):
-    question = "question"
-    answer = "answer"
-    comment = "comment"
+    question = 'question'
+    answer = 'answer'
+    comment = 'comment'
 
 
 class VoteType(str, Enum):
-    upvote = "upvote"
-    downvote = "downvote"
+    upvote = 'upvote'
+    downvote = 'downvote'
 
 
 class QuestionIn(BaseModel):
-    author: str
-    title: str
-    body: str
+    author: str = 'name'
+    title: str = 'header'
+    body: str = 'text'
     tags: Optional[str] = None
 
 
 class AnswerIn(BaseModel):
-    author: str
-    body: str
+    author: str = 'name'
+    body: str = 'text'
 
 
 class CommentIn(BaseModel):
-    author: str
-    body: str
+    author: str = 'name'
+    body: str = 'text'
 
 
 class QuestionOut(BaseModel):
-    id: int
-    author: str
-    title: str
-    body: str
+    id: int = 1
+    author: str = 'name'
+    title: str = 'header'
+    body: str = 'text'
     tags: Optional[str] = None
     created_at: datetime
-    score: int
+    score: int = 0
     score_data: Optional[bool] = None
 
 
 class AnswerOut(BaseModel):
-    id: int
-    question_id: int
-    author: str
-    body: str
+    id: int = 1
+    question_id: int = 1
+    author: str = 'name'
+    body: str = 'text'
     created_at: datetime
-    score: int
+    score: int = 0
     score_data: Optional[bool] = None
 
 
 class CommentOut(BaseModel):
-    id: int
-    question_id: Optional[int]
-    answer_id: Optional[int]
-    author: str
-    body: str
+    id: int = 1
+    question_id: Optional[int] = 1
+    answer_id: Optional[int] = 1
+    author: str = 'name'
+    body: str = 'text'
     created_at: datetime
-    score: int
+    score: int = 0
     score_data: Optional[bool] = None
 
 
 class VoteOut(BaseModel):
-    id: int
-    question_id: Optional[int]
-    answer_id: Optional[int]
-    comment_id: Optional[int]
+    id: int = 1
+    question_id: Optional[int] = 1
+    answer_id: Optional[int] = 1
+    comment_id: Optional[int] = 1
     user_hash: str
     like: bool

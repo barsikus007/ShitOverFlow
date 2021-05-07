@@ -22,15 +22,17 @@ app = FastAPI(
     description='Nice API for shit site'
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount('/static', StaticFiles(directory='static'), name='static')
 
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory='templates')
 
 
 def get_user_hash(request: Request):
-    # TODO
+    user_agent = request.headers.get('user-agent')
+    if not user_agent:
+        raise HTTPException(status_code=403, detail='Invalid user agent')
     user_hash = md5(
-        f'{request.client.host}{request.headers.get("user-agent", "6ec33e2d0038993b9eeae226e79977b3")}'.encode()
+        f'{request.client.host}{user_agent}'.encode()
     ).hexdigest()
     return user_hash
 
