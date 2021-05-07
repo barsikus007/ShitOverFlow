@@ -11,6 +11,10 @@
     font-weight: 600;
 }
 
+.post_cell {
+    min-height: 120px;
+}
+
 .comment-button {
     font-size: 12px;
     font-weight: 600;

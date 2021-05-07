@@ -5,30 +5,27 @@
 {% block desc_og %}{{ question.body }}{% endblock %}
 
 {% block main %}
-<div class="bg-light p-5 rounded">
-    <div class="row">
-        <h3>{{ question.title }}</h3>
-        <hr>
+<div class="d-flex justify-content-between pt-3">
+    <h4>{{ question.title }}</h4>
+    <div class="pb-3">
+        <button type="button" class="btn btn-primary btn-sm">
+            <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
+        </button>
     </div>
-    <div class="row">
-        <div class="col-1 d-flex justify-content-center">
-            <div class="vote">
-                <div class="row">
-                    <button class="arrow-up">
-                        <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="36" height="36"
-                             viewBox="0 0 36 36">
-                            <path d="M2 26h32L18 10 2 26z"></path>
-                        </svg>
-                    </button>
-                </div>
+</div>
+<div class="bg-light p-3 rounded row">
+    <div class="col-1 d-flex justify-content-center">
+        <div class="vote">
+            <div class="row">
+                <button class="arrow-up">
+                    <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="36" height="36"
+                         viewBox="0 0 36 36">
+                        <path d="M2 26h32L18 10 2 26z"></path>
+                    </svg>
+                </button>
+            </div>
 
-                <div class="row">
-                    <div class="col-12 d-flex justify-content-center">
-                        <div class="vote-count">
-                            {{ question.score }}
-                        </div>
-                    </div>
-                </div>
+            <div class="row d-flex justify-content-center vote-count">{{ question.score }}</div>
 
             <div class="row">
                 <button class="arrow-down">
@@ -42,12 +39,17 @@
     </div>
 
     <div class="col-11">
-            <div class="postcell text-field">{{ question.body }}</div>
-
+            <div class="post_cell text-field">{{ question.body }}</div>
             <br>
             <div class="row">
-                <div class="col-6">
-                    <div class="badge text-dark" style="background: #E1ECF4;">freebsd</div>
+                <div class="col-5">
+                    {% if question.tags %}
+                        {% for tag in question.tags.split() %}
+                            <span class="tag badge text-dark">
+                            {{ tag }}
+                        </span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="col-7 d-flex justify-content-end fw-bold" title="{{ question.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px">
@@ -70,11 +72,9 @@
                             </button>
                         </div>
 
-                                <div class="row">
-                                    <div class="col-12 d-flex justify-content-center">
-                                        <div class="vote-count comment-vote-count">0</div>
-                                    </div>
-                                </div>
+                        <div class="d-flex justify-content-center row vote-count comment-vote-count">
+                            {{ comment.score }}
+                        </div>
 
                         <div class="row">
                             <button class="arrow-down">
@@ -173,23 +173,28 @@
                     <div class="answer-cell">
                         <p>{{ answer.body }}</p>
                     </div>
+                </div>
 
-                    <div class="row comments">
-                        {% for comment in answer.comments %}
-                        <hr>
-                        <div class="comment">
-                            <div class="row">
-                                <div class="col-1 ">
-                                    <div class="comment-vote">
-                                        <div class="row">
-                                            <button class="arrow-up">
-                                                <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="18"
-                                                     height="18"
-                                                     viewBox="0 0 36 36">
-                                                    <path d="M2 26h32L18 10 2 26z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
+                <div class="row d-flex justify-content-end fw-bold" title="{{ answer.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
+                <br>
+
+                <div class="row comments">
+                    {% for comment in answer.comments %}
+                    <hr>
+                    <div class="comment">
+                        <div class="row">
+                            <div class="col-1">
+                                <div class="comment-vote">
+                                    <div class="row">
+                                        <button class="arrow-up">
+                                            <svg aria-hidden="true" class="svg-icon iconArrowUpLg"
+                                                 width="18"
+                                                 height="18"
+                                                 viewBox="0 0 36 36">
+                                                <path d="M2 26h32L18 10 2 26z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
 
                                     <div class="row d-flex justify-content-center vote-count comment-vote-count">{{ comment.score }}</div>
 
@@ -207,46 +212,64 @@
                                 </div>
                             </div>
 
-                                <div class="col-11">
-                                    <div class="comment-text">{{ comment.body }}</div>
-                                </div>
+                            <div class="col-11">
+                                <span class="comment-text">{{ comment.body }} </span>
+                                <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M %d.%m.%Y') }}">– {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}</span>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
-                    <div class="new-comment">
-                        <hr>
-                        <div class="row">
-                            <div class="col-3">
-                                <div class="clickable comment-button">
-                                    Add comment
-                                </div>
+                </div>
+                <hr>
+
+                <div class="new-comment">
+                    <div class="row">
+                        <div class="col-3">
+                            <div class="clickable comment-button">
+                                Add comment
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
-
-
         </div>
-        {% endfor %}
-        <div class="new-answer">
-            <hr>
-            <form>
-                <div class="row form-floating">
-                            <textarea class="form-control" placeholder="Leave a answer here" id="answerTextarea"
-                                      style="height: 150px"></textarea>
-                    <label for="answerTextarea">Your answer</label>
-                </div>
-                <div class="row">
-                    <div style="padding-top: 15px;">
-                        <button type="button" class="btn btn-primary btn-sm">Post your answer</button>
-                    </div>
-                </div>
-            </form>
+    </div>
+    {% endfor %}
+
+    <br>
+    <div class="answer-pages row pages d-flex justify-content-start">
+        <div class="col-auto clickable button-prev">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 fill="currentColor"
+                 class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
         </div>
 
+        <div class="col-auto page-number" style="font-size: 16px;">
+            1
+        </div>
+
+        <div class="col-auto clickable button-next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 fill="currentColor"
+                 class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="new-answer">
+        <br>
+        <form>
+            <div class="form-floating">
+                <textarea class="form-control" id="answerTextarea" style="height: 150px"></textarea>
+                <label for="answerTextarea">Your answer</label>
+            </div>
+            <div style="padding-top: 15px;">
+                <button type="button" class="btn btn-primary btn-sm">Post your answer</button>
+            </div>
+        </form>
     </div>
 </div>
 {% endif %}
