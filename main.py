@@ -1,8 +1,9 @@
+import time
 from hashlib import md5
 from typing import Optional, List
 
 from fastapi import FastAPI, Request, Path, Query
-from fastapi.responses import JSONResponse
+from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -18,6 +19,7 @@ db = Db(DB_AUTH)
 app = FastAPI(
     title='ShitOverFlow official API docs',
     version='0.9',
+    description='Nice API for shit site'
 )
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -31,6 +33,16 @@ def get_user_hash(request: Request):
         f'{request.client.host}{request.headers.get("user-agent", "6ec33e2d0038993b9eeae226e79977b3")}'.encode()
     ).hexdigest()
     return user_hash
+
+
+@app.middleware('http')
+async def add_process_time_header(request: Request, call_next):
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = time.time() - start_time
+    response.headers['X-User-Secret'] = get_user_hash(request)
+    response.headers['X-Process-Time'] = str(process_time)
+    return response
 
 
 @app.get('/', include_in_schema=False)
@@ -64,7 +76,7 @@ async def render_question(question_id: int, request: Request):
     user_hash = get_user_hash(request)
     question = await db.get_question(user_hash, question_id)
     if not question:
-        return JSONResponse({'detail': 'Not found'}, status_code=404)
+        raise HTTPException(status_code=404)
     answers = await db.get_answers(user_hash, question_id, 1)
     comments = await db.get_comments(user_hash, PostType.question, question_id, 1)
     details = {'answers_count': len(answers)}
@@ -81,19 +93,19 @@ async def render_question(question_id: int, request: Request):
         })
 
 
-@app.get('/api/v1/search/questions', response_model=List[QuestionOut])
+@app.get('/api/v1/search/questions', response_model=List[QuestionOut], tags=['question'])
 async def search_questions(q: str):
     """Gets all the questions on the site."""
     return await db.search_questions(q)
 
 
-@app.get('/api/v1/questions', response_model=List[QuestionOut])
+@app.get('/api/v1/questions', response_model=List[QuestionOut], tags=['question'])
 async def get_questions(page: Optional[int] = Query(1, ge=1)):
     """Gets all the questions on the site."""
     return await db.get_questions(page)
 
 
-@app.get('/api/v1/question/{question_id}', response_model=QuestionOut)
+@app.get('/api/v1/question/{question_id}', response_model=QuestionOut, tags=['question'])
 async def get_question(
         request: Request,
         question_id: int = Path(..., ge=1),
@@ -103,7 +115,7 @@ async def get_question(
     return await db.get_question(user_hash, question_id)
 
 
-@app.get('/api/v1/questions/{question_id}/answers', response_model=List[AnswerOut])
+@app.get('/api/v1/questions/{question_id}/answers', response_model=List[AnswerOut], tags=['answer'])
 async def get_answers(
         request: Request,
         question_id: int = Path(..., ge=1),
@@ -114,39 +126,39 @@ async def get_answers(
     return await db.get_answers(user_hash, question_id, page)
 
 
-@app.get('/api/v1/{post_type}/{post_id}/comments', response_model=List[CommentOut])
+@app.get('/api/v1/{post_type}/{post_id}/comments', response_model=List[CommentOut], tags=['comment'])
 async def get_comments(post_type: PostTypeQA, post_id: int, request: Request, page: Optional[int] = 1):
     """Gets the comments on a set of questions and answers."""
     user_hash = get_user_hash(request)
     return await db.get_comments(user_hash, post_type, post_id, page)
 
 
-@app.post('/api/v1/questions/add', response_model=ResponseID)
+@app.post('/api/v1/questions/add', response_model=ResponseID, tags=['question'])
 async def add_question(question: QuestionIn):
     """Create a new question."""
     return await db.create_question(question)
 
 
-@app.post('/api/v1/questions/{question_id}/answers/add', response_model=ResponseID)
+@app.post('/api/v1/questions/{question_id}/answers/add', response_model=ResponseID, tags=['answer'])
 async def add_answer(question_id: int, answer: AnswerIn):
     """Create a new answer on the given question."""
     return await db.create_answer(question_id, answer)
 
 
-@app.post('/api/v1/{post_type}/{post_id}/comments/add', response_model=ResponseID)
+@app.post('/api/v1/{post_type}/{post_id}/comments/add', response_model=ResponseID, tags=['comment'])
 async def add_comment(post_type: PostTypeQA, post_id: int, comment: CommentIn):
     """Create a new comment."""
     return await db.create_comment(post_type, post_id, comment)
 
 
-@app.post('/api/v1/{post_type}/{post_id}/{action}', response_model=ResponseSuccess)
+@app.post('/api/v1/{post_type}/{post_id}/{action}', response_model=ResponseSuccess, tags=['vote'])
 async def vote(post_type: PostType, post_id: int, action: VoteType, request: Request):
     """Upvotes an post."""
     user_hash = get_user_hash(request)
     return {'success': await db.set_vote(post_type.value, post_id, action, user_hash)}
 
 
-@app.post('/api/v1/{post_type}/{post_id}/{action}/undo', response_model=ResponseSuccess)
+@app.post('/api/v1/{post_type}/{post_id}/{action}/undo', response_model=ResponseSuccess, tags=['vote'])
 async def undo_vote(post_type: PostType, post_id: int, action: VoteType, request: Request):
     """Undoes an upvote on an post."""
     user_hash = get_user_hash(request)
