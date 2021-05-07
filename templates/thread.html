@@ -44,9 +44,17 @@
         <div class="col-11">
             <div class="postcell text-field">{{ question.body }}</div>
 
+            <br>
             <div class="row">
-                <div class="col-12">
+                <div class="col-6">
                     <div class="badge text-dark" style="background: #E1ECF4;">freebsd</div>
+                </div>
+
+                <div class="col-6">
+
+                    <a class="link-dark" href="/questions/{{ question.id }}" style="text-decoration: none;">Created
+                        at {{ question.created_at.strftime('%H:%M %d.%m.%Y') }} by {{ question.author }}</a>
+
                 </div>
 
             </div>
