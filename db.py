@@ -1,6 +1,7 @@
 import asyncio
 
 import asyncpg
+import humanize
 from models import VoteType, PostType, PostTypeQA
 from models import QuestionIn, AnswerIn, CommentIn
 
@@ -62,7 +63,7 @@ class Database:
             )
             result['score_data'] = res_2[0]['upvote'] if res_2 else None
             result['comments'] = res_3
-
+            result['human_time'] = humanize.naturaltime(result['created_at'])
         return res[0] if res else None
 
     async def get_questions(self, page):
@@ -91,11 +92,12 @@ class Database:
                 [result['id'], user_hash]
             )
             res_3 = await self.query_fetch(
-                'SELECT * FROM comments WHERE question_id=$1',
+                'SELECT * FROM comments WHERE answer_id=$1',
                 [result['id']]
             )
             result['score_data'] = res_2[0]['upvote'] if res_2 else None
             result['comments'] = res_3
+            result['human_time'] = humanize.naturaltime(result['created_at'])
         return res
 
     async def get_comments(self, user_hash, post_type, post_id, page):

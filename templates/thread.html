@@ -30,18 +30,18 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <button class="arrow-down">
-                        <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="36" height="36"
-                             viewBox="0 0 36 36">
-                            <path d="M2 10h32L18 26 2 10z"></path>
-                        </svg>
-                    </button>
-                </div>
+            <div class="row">
+                <button class="arrow-down">
+                    <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="36" height="36"
+                         viewBox="0 0 36 36">
+                        <path d="M2 10h32L18 26 2 10z"></path>
+                    </svg>
+                </button>
             </div>
         </div>
+    </div>
 
-        <div class="col-11">
+    <div class="col-11">
             <div class="postcell text-field">{{ question.body }}</div>
 
             <br>
@@ -50,31 +50,25 @@
                     <div class="badge text-dark" style="background: #E1ECF4;">freebsd</div>
                 </div>
 
-                <div class="col-6">
-
-                    <a class="link-dark" href="/questions/{{ question.id }}" style="text-decoration: none;">Created
-                        at {{ question.created_at.strftime('%H:%M %d.%m.%Y') }} by {{ question.author }}</a>
-
+                <div class="col-7 d-flex justify-content-end fw-bold" title="{{ question.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px">
+                    asked {{ question.human_time }} by {{ question.author }}
                 </div>
-
             </div>
             <br>
             <div class="row comments">
                 {% for comment in question.comments %}
                 <hr>
-                <div class="comment">
-                    <div class="row">
-                        <div class="col-1 d-flex justify-content-center">
-                            <div class="comment-vote">
-                                <div class="row">
-                                    <button class="arrow-up">
-                                        <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="18"
-                                             height="18"
-                                             viewBox="0 0 36 36">
-                                            <path d="M2 26h32L18 10 2 26z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
+                <div class="comment row d-flex justify-content-center comment-vote">
+                    <div class="col-1">
+                        <div class="row">
+                            <button class="arrow-up">
+                                <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="18"
+                                     height="18"
+                                     viewBox="0 0 36 36">
+                                    <path d="M2 26h32L18 10 2 26z"></path>
+                                </svg>
+                            </button>
+                        </div>
 
                                 <div class="row">
                                     <div class="col-12 d-flex justify-content-center">
@@ -82,87 +76,100 @@
                                     </div>
                                 </div>
 
-                                <div class="row">
-                                    <button class="arrow-down">
-                                        <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="18"
-                                             height="18"
-                                             viewBox="0 0 36 36">
-                                            <path d="M2 10h32L18 26 2 10z"></path>
-                                        </svg>
-                                    </button>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div class="col-11">
-                            <div class="comment-text">{{ comment.body }}</div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-                <div class="new-comment">
-                    <hr>
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="clickable comment-button">
-                                Add comment
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-    </div>
-</div>
-{% if answers %}
-<div class="answers-block">
-    <div class="bg-light p-5 rounded">
-
-        <div class="row">
-            <div class="answer-count">
-                <div class="col-3">
-                    <h3>{{ details.answers_count }} Answer</h3>
-                </div>
-            </div>
-        </div>
-
-        {% for answer in answers %}
-        <div class="answer">
-            <hr>
-            <div class="row">
-                <div class="col-1 d-flex justify-content-center">
-                    <div class="vote">
-                        <div class="row">
-                            <button class="arrow-up">
-                                <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="32" height="32"
-                                     viewBox="0 0 36 36">
-                                    <path d="M2 26h32L18 10 2 26z"></path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12 d-flex justify-content-center">
-                                <div class="vote-count">{{ answer.score }}</div>
-                            </div>
-                        </div>
-
                         <div class="row">
                             <button class="arrow-down">
-                                <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="32"
-                                     height="32"
+                                <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="18"
+                                     height="18"
                                      viewBox="0 0 36 36">
                                     <path d="M2 10h32L18 26 2 10z"></path>
                                 </svg>
                             </button>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-11">
+                    <div class="col-11">
+                        <span class="comment-text">{{ comment.body }} </span>
+                        <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M %d.%m.%Y') }}">
+                            – {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+                <hr>
+                <div class="new-comment">
+                    <div class="row clickable comment-button">
+                        Add comment
+                    </div>
+                </div>
+            </div>
+        </div>
+</div>
+<br>
+
+{% if answers %}
+<div class="answers-block">
+    <div class="answer-count">
+        <h3>{{ details.answers_count }} Answer</h3>
+    </div>
+    <br>
+    <div class="answer-pages row pages d-flex justify-content-start">
+        <div class="col-auto clickable button-prev">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 fill="currentColor"
+                 class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            </svg>
+        </div>
+
+        <div class="col-auto page-number" style="font-size: 16px;">
+            1
+        </div>
+
+        <div class="col-auto clickable button-next">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                 fill="currentColor"
+                 class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            </svg>
+        </div>
+    </div>
+
+    {% for answer in answers %}
+    <div class="answer">
+        <br>
+        <div class="row bg-light rounded p-3">
+            <div class="col-1 d-flex justify-content-center">
+                <div class="vote">
+                    <div class="row">
+                        <button class="arrow-up">
+                            <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="32"
+                                 height="32"
+                                 viewBox="0 0 36 36">
+                                <path d="M2 26h32L18 10 2 26z"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="vote-count">{{ answer.score }}</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <button class="arrow-down">
+                            <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="32"
+                                 height="32"
+                                 viewBox="0 0 36 36">
+                                <path d="M2 10h32L18 26 2 10z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-11">
+                <div class="row">
                     <div class="answer-cell">
                         <p>{{ answer.body }}</p>
                     </div>
@@ -184,24 +191,21 @@
                                             </button>
                                         </div>
 
-                                        <div class="row">
-                                            <div class="col-12 d-flex justify-content-center">
-                                                <div class="vote-count comment-vote-count">0</div>
-                                            </div>
-                                        </div>
+                                    <div class="row d-flex justify-content-center vote-count comment-vote-count">{{ comment.score }}</div>
 
-                                        <div class="row">
-                                            <button class="arrow-down">
-                                                <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="18"
-                                                     height="18"
-                                                     viewBox="0 0 36 36">
-                                                    <path d="M2 10h32L18 26 2 10z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-
+                                    <div class="row">
+                                        <button class="arrow-down">
+                                            <svg aria-hidden="true"
+                                                 class="m0 svg-icon iconArrowDownLg" width="18"
+                                                 height="18"
+                                                 viewBox="0 0 36 36">
+                                                <path d="M2 10h32L18 26 2 10z"></path>
+                                            </svg>
+                                        </button>
                                     </div>
+
                                 </div>
+                            </div>
 
                                 <div class="col-11">
                                     <div class="comment-text">{{ comment.body }}</div>
@@ -245,6 +249,6 @@
 
     </div>
 </div>
-
 {% endif %}
+
 {% endblock %}

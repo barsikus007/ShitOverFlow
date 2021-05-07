@@ -1,2 +1,3 @@
 fastapi[all]
 asyncpg
+humanize

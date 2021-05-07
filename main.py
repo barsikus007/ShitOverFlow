@@ -18,7 +18,7 @@ db = Db(DB_AUTH)
 
 app = FastAPI(
     title='ShitOverFlow official API docs',
-    version='0.9',
+    version='1.0',
     description='Nice API for shit site'
 )
 
