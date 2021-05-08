@@ -1,20 +1,19 @@
 import time
 from hashlib import md5
-from typing import Optional, List, Dict, Union
+from typing import Optional, Dict, Union
 
-from fastapi import FastAPI, Request, Path, Query, Form, Body
+from fastapi import FastAPI, Request, Path, Query, Form
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
-from aiofiles import open as aopen
 
 from config import DB_AUTH, TOKEN
 from db import Database as Db
 from models import ResponseID, ResponseSuccess
 from models import VoteType, PostType, PostTypeQA
 from models import QuestionIn, AnswerIn, CommentIn
-from models import QuestionOut, AnswerOut, CommentOut
+from models import QuestionOut
 from models import Questions, Answers, Comments
 
 db = Db(DB_AUTH)
@@ -263,7 +262,7 @@ async def delete_post(
 @app.get('/about', include_in_schema=False)
 async def about():
     """???"""
-    return StreamingResponse(open('static/HD.webm', 'rb'), media_type="video/mp4")
+    return StreamingResponse(open('static/about.webm', 'rb'), media_type="video/mp4")
 
 
 if __name__ == '__main__':

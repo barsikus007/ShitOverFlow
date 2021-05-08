@@ -46,7 +46,6 @@ class Database:
         questions_2 = await self.query_fetch(
             f"SELECT * FROM questions WHERE body ILIKE '%{q}%' ORDER BY id DESC"
         )
-        # TODO search in answers and comments
         questions = [*questions_1, *questions_2]
         questions = [dict(tupleized) for tupleized in set(tuple(item.items()) for item in questions)]
         count = len(questions)
