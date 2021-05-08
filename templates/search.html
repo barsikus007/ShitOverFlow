@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="d-flex justify-content-between pt-3">
-    <h4>Top Questions</h4>
+    <h4>Search Results for "{{ query }}" ({% if count == 0 %}No{% else %}{{ count }}{% endif %} Result{% if count != 1 %}s{% endif %})</h4>
     <div class="pb-3">
         <button type="button" class="btn btn-primary btn-sm">
             <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
@@ -60,7 +60,7 @@
         {% if max_page == 0 %}{% set page = 0 %}{% endif %}
         <div class="col-auto clickable button-prev">
             <svg class="bi bi-caret-left-fill" xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 16 16">
-                <a class="{% if page <= 1 %}unclickable{% endif %}" href="/page/{{ page - 1 }}">
+                <a class="{% if page <= 1 %}unclickable{% endif %}" href="/search?q={{ query }}&page={{ page - 1 }}">
                     <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
                 </a>
             </svg>
@@ -70,7 +70,7 @@
 
         <div class="col-auto clickable button-next">
             <svg class="bi bi-caret-right-fill" xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 16 16">
-                <a class="{% if page >= max_page %}unclickable{% endif %}" href="/page/{{ page + 1 }}">
+                <a class="{% if page >= max_page %}unclickable{% endif %}" href="/search?q={{ query }}&page={{ page + 1 }}">
                     <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
                 </a>
             </svg>

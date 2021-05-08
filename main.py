@@ -81,6 +81,24 @@ async def render_page(request: Request, page: int):
     )
 
 
+@app.get('/search', include_in_schema=False)
+async def search_page(request: Request, q: str, page: Optional[int] = 1):
+    """Gets all the questions on the site."""
+    user_hash = get_user_hash(request)
+    questions = await db.search_questions(q, page)
+    return templates.TemplateResponse(
+        'search.html',
+        {
+            'request': request,
+            'user_hash': user_hash,
+            'page': page,
+            'questions': questions['questions'],
+            'count': questions['count'],
+            'query': q,
+        }
+    )
+
+
 @app.get('/questions/ask', include_in_schema=False)
 async def render_create(request: Request):
     user_hash = get_user_hash(request)

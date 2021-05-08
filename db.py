@@ -38,13 +38,33 @@ class Database:
                 else:
                     raise e
 
-    async def search_questions(self, q):
+    async def search_questions(self, q, page):
         """SQL search"""
-        questions = await self.query_fetch(
-            f"SELECT * FROM questions WHERE title ILIKE '%{q}%' ORDER BY id DESC FETCH NEXT 10 ROWS ONLY",
-            []
+        questions_1 = await self.query_fetch(
+            f"SELECT * FROM questions WHERE title ILIKE '%{q}%' ORDER BY id DESC"
         )
-        return questions if questions else None
+        questions_2 = await self.query_fetch(
+            f"SELECT * FROM questions WHERE body ILIKE '%{q}%' ORDER BY id DESC"
+        )
+        questions = [*questions_1, *questions_2]
+        _ = []
+        for question in questions:
+            if not question['id'] in _:
+                _.append(question['id'])
+            else:
+                questions.remove(question)
+        count = len(questions)
+        questions = questions[(page - 1) * 10: page * 10]
+        for question in questions:
+            answers_count = await self.query_fetch(
+                'SELECT count(*) FROM answers WHERE question_id=$1',
+                [question['id']]
+            )
+            question['answers_count'] = answers_count[0]['count']
+        return {
+            'questions': questions[:10],
+            'count': count,
+        }
 
     async def get_question(self, user_hash, question_id):
         """SQL get questions with offset of (page-1)*10 or 30"""
