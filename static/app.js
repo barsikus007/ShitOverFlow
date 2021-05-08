@@ -66,3 +66,34 @@ function like() {
         pageNum = 1;
     }
 }
+
+function commentSendPreview(index) {
+    let addButton = document.querySelector(`#answer-${index} div.comment-button`);
+    addButton.innerHTML =
+        `<form name="createComment">
+            <div class="row">
+                <div class="col-sm-6">
+                    <input type="text" name="comment" class="form-control" placeholder="Comment" aria-label="Comment">
+                </div>
+                <div class="col-sm">
+                    <input type="text" name="name" class="form-control" placeholder="Name" aria-label="Name">
+                </div>
+                <div class="col-sm">
+                    <button type="button" class="btn btn-primary button-send" onclick="commentPush(${index})">Add comment</button>
+                </div>  
+            </div>
+         </form>`;
+}
+
+function commentPush(index) {
+    let commentForm = document.forms.createComment;
+    let commentText = commentForm.elements.comment.value;
+    let commentAuthor = commentForm.elements.name.value;
+
+    fetch(`http://shitoverflow.tmweb.ru/api/v1/answer/${index}/comments/add`,
+        { method: 'POST', body: `{"author": "${commentAuthor}", "body": "${commentText}"}` })
+        .then(result => result.json())
+        .then(() => window.location.reload());
+
+    return false;
+}

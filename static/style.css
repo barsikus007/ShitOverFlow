@@ -7,6 +7,13 @@ html {
     scrollbar-width: none;
 }
 
+.buttonComment {
+    text-decoration: none;
+    background: none;
+    outline: none;
+    border: none;
+}
+
 .container {
     max-width: 768px;
 }
