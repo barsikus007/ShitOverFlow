@@ -107,7 +107,13 @@
                         </div>
                     {% endfor %}
                     <hr>
-                    <div class="row new-comment clickable comment-button fine-text">Add comment</div>
+                    <div class="row comment-button fine-text">
+                        <div class="col-3">
+                            <button class="button-comment" onclick="commentSendPreview('question' , {{ question.id }})">
+                                Add comment
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -190,8 +196,8 @@
 
                         <div class="row">
                             <div class="d-flex justify-content-end text-end fine-text"
-                             title="{{ answer.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">
-                            answered {{ answer.human_time }} by {{ answer.author }}</div>
+                                 title="{{ answer.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">
+                                answered {{ answer.human_time }} by {{ answer.author }}</div>
                         </div>
                         <br>
 
@@ -242,7 +248,7 @@
 
                         <div class="row comment-button fine-text">
                             <div class="col-3">
-                                <button class="button-comment" onclick="commentSendPreview({{ answer.id }})">
+                                <button class="button-comment" onclick="commentSendPreview('answer', {{ answer.id }})">
                                     Add comment
                                 </button>
                             </div>

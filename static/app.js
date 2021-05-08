@@ -10,8 +10,8 @@
         .forEach(function (form) {
             form.addEventListener('submit', function (event) {
                 if (!form.checkValidity()) {
-                  event.preventDefault()
-                  event.stopPropagation()
+                    event.preventDefault()
+                    event.stopPropagation()
                 }
 
                 form.classList.add('was-validated')
@@ -19,7 +19,15 @@
         })
 })()
 
-function createThread(){
+window.onload = () => {
+    let commentsBlockArray = document.getElementsByClassName('comment-block');
+
+    for (let comment in commentsBlockArray) {
+
+    }
+}
+
+function createThread() {
     let form = document.forms.create;
     let author = form.elements.author.value;
     let title = form.elements.title.value;
@@ -36,9 +44,9 @@ function changeCommentPage() {
     let questions = fetch(`http://shitoverflow.tmweb.ru/api/v1/questions?page=${2}`)
         .then(response => response.json())
         .then(data => data.questions.forEach(function (question, ind) {
-                ques_link[ind].href = `/questions/${question.id}`;
-                ques_link[ind].innerText = question.title;
-            }));
+            ques_link[ind].href = `/questions/${question.id}`;
+            ques_link[ind].innerText = question.title;
+        }));
     console.log(ind)
     let questionsCount = 10;
     //let maxPages = Math.ceil(questionsCount / 10);
@@ -58,33 +66,33 @@ function vote(post_type, post_id, action, undo=false) {
     return false;
 }
 
-function commentSendPreview(index) {
-    let addButton = document.querySelector(`#answer-${index} div.comment-button`);
+function commentSendPreview(post_type, index) {
+    let addButton = document.querySelector(`#${post_type}-${index} div.comment-button`);
     addButton.innerHTML =
-        `<form name="createComment">
-            <div class="row">
-                <div class="col-sm-6">
-                    <input type="text" name="comment" class="form-control" placeholder="Comment" aria-label="Comment">
-                </div>
-                <div class="col-sm">
-                    <input type="text" name="name" class="form-control" placeholder="Name" aria-label="Name">
-                </div>
-                <div class="col-sm">
-                    <button type="button" class="btn btn-primary button-send" onclick="commentPush(${index})">Add comment</button>
-                </div>  
+        `<form name="create-comment">
+        <div class="row">
+            <div class="col-sm-6">
+                <input type="text" name="comment" class="form-control" placeholder="Comment" aria-label="Comment">
             </div>
-         </form>`;
+            <div class="col-sm">
+                <input type="text" name="name" class="form-control" placeholder="Name" aria-label="Name">
+            </div>
+            <div class="col-sm">
+                <button type="button" class="btn btn-primary button-send" onclick="commentPush('${post_type}', ${index})">Add comment</button>
+            </div>  
+        </div>
+     </form>`;
 }
 
-function commentPush(index) {
-    let commentForm = document.forms.createComment;
+function commentPush(post_type, index) {
+    let commentForm = document.forms['create-comment'];
     let commentText = commentForm.elements.comment.value;
-    let commentAuthor = commentForm.elements.name.value;
+    let commentAuthor = commentForm.elements.name.value
 
-    fetch(`http://shitoverflow.tmweb.ru/api/v1/answer/${index}/comments/add`,
-        { method: 'POST', body: `{"author": "${commentAuthor}", "body": "${commentText}"}` })
+    fetch(`http://shitoverflow.tmweb.ru/api/v1/${post_type}/${index}/comments/add`,
+        {method: 'POST', body: `{"author": "${commentAuthor}", "body": "${commentText}"}`})
         .then(result => result.json())
         .then(() => window.location.reload());
-
     return false;
 }
+
