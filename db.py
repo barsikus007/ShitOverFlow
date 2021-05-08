@@ -38,7 +38,7 @@ class Database:
                 else:
                     raise e
 
-    async def search_questions(self, q, page):
+    async def search_questions(self, q, page=1):
         """SQL search"""
         questions_1 = await self.query_fetch(
             f"SELECT * FROM questions WHERE title ILIKE '%{q}%' ORDER BY id DESC"
@@ -46,13 +46,9 @@ class Database:
         questions_2 = await self.query_fetch(
             f"SELECT * FROM questions WHERE body ILIKE '%{q}%' ORDER BY id DESC"
         )
+        # TODO search in answers and comments
         questions = [*questions_1, *questions_2]
-        _ = []
-        for question in questions:
-            if not question['id'] in _:
-                _.append(question['id'])
-            else:
-                questions.remove(question)
+        questions = [dict(tupleized) for tupleized in set(tuple(item.items()) for item in questions)]
         count = len(questions)
         questions = questions[(page - 1) * 10: page * 10]
         for question in questions:
@@ -65,6 +61,26 @@ class Database:
             'questions': questions[:10],
             'count': count,
         }
+
+    async def update_post(self, post_type: PostType, post_id, fields):
+        """SQL update post with id"""
+        query = []
+        for param, value in fields.items():
+            query.append(f"{param}='{value}'")
+        ssq = f'UPDATE {post_type.value}s SET {", ".join(query)} WHERE id=$1 RETURNING true'
+        result = await self.query_fetch(
+            ssq,
+            [post_id]
+        )
+        return result[0]['bool'] if result else False
+
+    async def delete_post(self, post_type: PostType, post_id):
+        """SQL delete post with id"""
+        result = await self.query_fetch(
+            f'DELETE FROM {post_type.value}s WHERE id=$1 RETURNING true',
+            [post_id]
+        )
+        return result[0]['bool'] if result else False
 
     async def get_question(self, user_hash, question_id):
         """SQL get questions with offset of (page-1)*10 or 30"""
@@ -174,14 +190,14 @@ class Database:
 
     async def create_question(self, question: QuestionIn):
         question_id = await self.query_fetch(
-            'INSERT INTO questions(author, title, body, tags) VALUES ($1, $2, $3, $4) RETURNING ID',
+            'INSERT INTO questions(author, title, body, tags) VALUES ($1, $2, $3, $4) RETURNING id',
             [question.author, question.title, question.body, question.tags]
         )
         return question_id[0] if question_id else None
 
     async def create_answer(self, question_id, answer: AnswerIn):
         answer_id = await self.query_fetch(
-            'INSERT INTO answers(question_id, author, body) VALUES ($1, $2, $3) RETURNING ID',
+            'INSERT INTO answers(question_id, author, body) VALUES ($1, $2, $3) RETURNING id',
             [question_id, answer.author, answer.body]
         )
         return answer_id[0] if answer_id else None
@@ -192,7 +208,7 @@ class Database:
         else:
             post_type_id = 'answer_id'
         comment_id = await self.query_fetch(
-            f'INSERT INTO comments({post_type_id}, author, body) VALUES ($1, $2, $3) RETURNING ID',
+            f'INSERT INTO comments({post_type_id}, author, body) VALUES ($1, $2, $3) RETURNING id',
             [post_id, comment.author, comment.body]
         )
         return comment_id[0] if comment_id else None

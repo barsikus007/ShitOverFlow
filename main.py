@@ -1,14 +1,14 @@
 import time
 from hashlib import md5
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union
 
-from fastapi import FastAPI, Request, Path, Query, Form
+from fastapi import FastAPI, Request, Path, Query, Form, Body
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
-from config import DB_AUTH
+from config import DB_AUTH, TOKEN
 from db import Database as Db
 from models import ResponseID, ResponseSuccess
 from models import VoteType, PostType, PostTypeQA
@@ -162,7 +162,7 @@ async def post_create(
     return RedirectResponse(f'/questions/{question_id}', status_code=303)
 
 
-@app.get('/api/v1/search/questions', response_model=List[QuestionOut], tags=['question'])
+@app.get('/api/v1/search/questions', response_model=Questions, tags=['question'])
 async def search_questions(q: str):
     """Gets all the questions on the site."""
     return await db.search_questions(q)
@@ -232,6 +232,31 @@ async def undo_vote(post_type: PostType, post_id: int, action: VoteType, request
     """Undoes an upvote on an post."""
     user_hash = get_user_hash(request)
     return {'success': await db.set_vote(post_type.value, post_id, action, user_hash, True)}
+
+
+@app.patch('/api/v1/{post_type}/{post_id}', response_model=ResponseSuccess, tags=['other'])
+async def edit_post(
+        admin_token: str,
+        fields: Dict[str, Union[int, str]],
+        post_type: PostType = Path(...),
+        post_id: int = Path(..., ge=1),
+):
+    """Remove specific post from the site."""
+    if admin_token != TOKEN:
+        raise HTTPException(status_code=403, detail='Incorrect token')
+    return {'success': await db.update_post(post_type, post_id, fields)}
+
+
+@app.delete('/api/v1/{post_type}/{post_id}', response_model=ResponseSuccess, tags=['other'])
+async def delete_post(
+        admin_token: str,
+        post_type: PostType = Path(...),
+        post_id: int = Path(..., ge=1),
+):
+    """Remove specific post from the site."""
+    if admin_token != TOKEN:
+        raise HTTPException(status_code=403, detail='Incorrect token')
+    return {'success': await db.delete_post(post_type, post_id)}
 
 
 if __name__ == '__main__':

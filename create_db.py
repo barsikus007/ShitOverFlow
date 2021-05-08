@@ -55,7 +55,8 @@ create table answers
             primary key,
     question_id integer                 not null
         constraint answers_questions_id_fk
-            references questions,
+            references questions
+            on delete cascade,
     author      text                    not null,
     body        text                    not null,
     created_at  timestamp default now() not null,
@@ -76,10 +77,12 @@ create table comments
             primary key,
     question_id integer
         constraint comments_questions_id_fk
-            references questions,
+            references questions
+            on delete cascade,
     answer_id   integer
         constraint comments_answers_id_fk
-            references answers,
+            references answers
+            on delete cascade,
     author      text                    not null,
     body        text                    not null,
     created_at  timestamp default now() not null,
@@ -100,13 +103,16 @@ create table votes
             primary key,
     question_id integer
         constraint votes_questions_id_fk
-            references questions,
+            references questions
+            on delete cascade,
     answer_id   integer
         constraint votes_answers_id_fk
-            references answers,
+            references answers
+            on delete cascade,
     comment_id  integer
         constraint votes_comments_id_fk
-            references comments,
+            references comments
+            on delete cascade,
     user_hash   text    not null,
     upvote      boolean not null
 );

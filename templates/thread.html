@@ -70,7 +70,7 @@
                         {% set score = 0 %}
                     {% endif %}
                 <hr>
-                <div class="comment row d-flex justify-content-center comment-vote">
+                <div class="comment row d-flex justify-content-center comment-vote" id="comment-{{ comment.id }}">
                     <div class="col-1">
                         <div class="row">
                             <button class="arrow-up">
@@ -141,7 +141,7 @@
         {% else %}
             {% set score = 0 %}
         {% endif %}
-    <div class="answer">
+    <div class="answer" id="answer-{{ answer.id }}">
         <br>
         <div class="row bg-light rounded p-3">
             <div class="col-1 d-flex justify-content-center">
@@ -188,7 +188,7 @@
                             {% set score = 0 %}
                         {% endif %}
                     <hr>
-                    <div class="comment">
+                    <div class="comment" id="comment-{{ comment.id }}">
                         <div class="row">
                             <div class="col-1">
                                 <div class="comment-vote">
