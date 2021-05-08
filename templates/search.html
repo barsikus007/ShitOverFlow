@@ -13,46 +13,46 @@
         </button>
     </div>
 </div>
-{% for question in questions %}
-<div class="questions-block g-0">
-    <div class="question bg-light border rounded p-3 row" id="question-{{ question.id }}">
-        <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
-            <div title="{{ question.score }} votes">{{ question.score }}</div>
-            <div>votes</div>
-        </div>
-
-        <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
-            <div title="{{ question.score }} answers">{{ question.answers_count }}</div>
-            <div>answers</div>
-        </div>
-
-        <div class="col-9">
-            <div class="row">
-                <h3 class="question-text">
-                    <a href="/questions/{{ question.id }}" class="question-hyperlink">{{ question.title }}</a>
-                </h3>
+<div class="questions-block">
+    {% for question in questions %}
+        <div class="question bg-light border rounded p-3 row g-0" id="question-{{ question.id }}">
+            <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
+                <div title="{{ question.score }} votes">{{ question.score }}</div>
+                <div>votes</div>
             </div>
 
-            <div class="row">
-                <div class="col-4">
-                    {% if question.tags %}
-                    {% for tag in question.tags.split() %}
-                    <span class="tag badge text-dark">
-                        {{ tag }}
-                    </span>
-                    {% endfor %}
-                    {% endif %}
+            <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
+                <div title="{{ question.score }} answers">{{ question.answers_count }}</div>
+                <div>answers</div>
+            </div>
+
+            <div class="col-9">
+                <div class="row">
+                    <h3 class="question-text">
+                        <a href="/questions/{{ question.id }}" class="question-hyperlink">{{ question.title }}</a>
+                    </h3>
                 </div>
 
-                <div class="col-8 d-flex flex-row-reverse">
-                    <a class="link-dark fine-text text-end" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }} by {{ question.author }}</a>
+                <div class="row">
+                    <div class="col-4">
+                        {% if question.tags %}
+                        {% for tag in question.tags.split() %}
+                        <span class="tag badge text-dark">
+                            {{ tag }}
+                        </span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="col-8 d-flex flex-row-reverse">
+                        <a class="link-dark fine-text text-end" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }} by {{ question.author }}</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    <br class="question">
+    {% endfor %}
 </div>
-<br class="question">
-{% endfor %}
 <div class="pages">
     <div class="row d-flex justify-content-center">
         {% set max_page = (count / 10)|round(0, 'ceil')|int %}

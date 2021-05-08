@@ -48,23 +48,14 @@ function changeCommentPage() {
     }
 }
 
-function like() {
-    let prevButton = document.getElementsByClassName("button-prev");
-    let nextButton = document.getElementsByClassName("button-next");
-    let pageNum = document.getElementsByClassName("page-number");
-    let questions = fetch(`http://shitoverflow.tmweb.ru/api/v1/questions?page=${2}`)
-        .then(response => response.json())
-        .then(data => data.questions.forEach(function (question, ind) {
-                ques_link[ind].href = `/questions/${question.id}`;
-                ques_link[ind].innerText = question.title;
-            }));
-    console.log(ind)
-    let questionsCount = 10;
-    //let maxPages = Math.ceil(questionsCount / 10);
+function vote(post_type, post_id, action, undo=false) {
+    let undo_str = undo ? '/undo' : ''
+    fetch(`http://shitoverflow.tmweb.ru/api/v1/${post_type}/${post_id}/${action}${undo_str}`,
+        {method: 'POST'})
+        .then(result => result.json())
+        .then(() => window.location.reload());
 
-    if (pageNum < 1) {
-        pageNum = 1;
-    }
+    return false;
 }
 
 function commentSendPreview(index) {

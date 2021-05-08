@@ -128,12 +128,12 @@ async def post_create(
 
 
 @app.get('/questions/{question_id}', include_in_schema=False)
-async def render_question(question_id: int, request: Request):
+async def render_question(question_id: int, request: Request, page: Optional[int] = Query(1, ge=1)):
     user_hash = get_user_hash(request)
     question = await db.get_question(user_hash, question_id)
     if not question:
         raise HTTPException(status_code=404)
-    answers = await db.get_answers(user_hash, question_id, 1)
+    answers = await db.get_answers(user_hash, question_id, page)
     comments = await db.get_comments(user_hash, PostType.question, question_id, 1)
     details = {'answers_count': answers['count']}
     return templates.TemplateResponse(
@@ -146,6 +146,7 @@ async def render_question(question_id: int, request: Request):
             'answers': answers['answers'],
             'comments': comments,
             'details': details,
+            'page': page,
         })
 
 

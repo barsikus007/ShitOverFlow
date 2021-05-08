@@ -93,7 +93,7 @@ class Database:
                 [question_id, user_hash]
             )
             question_comments = await self.query_fetch(
-                'SELECT * FROM comments WHERE question_id=$1',
+                'SELECT * FROM comments WHERE question_id=$1 ORDER BY created_at FETCH NEXT 5 ROWS ONLY',
                 [question['id']]
             )
             question['score_data'] = question_score[0]['upvote'] if question_score else None
@@ -140,7 +140,7 @@ class Database:
                 [answer['id'], user_hash]
             )
             answer_comments = await self.query_fetch(
-                'SELECT * FROM comments WHERE answer_id=$1',
+                'SELECT * FROM comments WHERE answer_id=$1 ORDER BY created_at FETCH NEXT 5 ROWS ONLY',
                 [answer['id']]
             )
             answer['score_data'] = answer_score[0]['upvote'] if answer_score else None
@@ -170,8 +170,8 @@ class Database:
         else:
             raise ValueError
         comments = await self.query_fetch(
-            f'SELECT * FROM comments WHERE {post_type_id}=$1 ORDER BY id OFFSET $2 FETCH NEXT 5 ROWS ONLY',
-            [post_id, (page-1) * 10]
+            f'SELECT * FROM comments WHERE {post_type_id}=$1 ORDER BY created_at OFFSET $2 FETCH NEXT 5 ROWS ONLY',
+            [post_id, (page-1) * 5]
         )
         for comment in comments:
             comment_score = await self.query_fetch(
@@ -231,8 +231,7 @@ class Database:
         )
         if not undo:
             if vote:
-                if vote[0]['upvote'] == action:
-                    return False
+                return False
                 await self.query_fetch(
                     f'UPDATE votes SET upvote=$1 WHERE id=$2',
                     [action, vote[0]['id']]
@@ -255,8 +254,8 @@ class Database:
             if vote:
                 if vote[0]['upvote'] == action:
                     await self.query_fetch(
-                        f'DELETE FROM votes WHERE user_hash=$1',
-                        [user_hash]
+                        f'DELETE FROM votes WHERE id=$2 AND user_hash=$1',
+                        [user_hash, vote[0]['id']]
                     )
                     await self.query_fetch(
                         f'UPDATE {post_type_id[:-3] + "s"} SET score=score-$1 WHERE id=$2',

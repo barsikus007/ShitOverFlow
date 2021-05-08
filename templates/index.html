@@ -50,9 +50,9 @@
                 </div>
             </div>
         </div>
-    <br class="question">
+        <br class="question">
+    {% endfor %}
 </div>
-{% endfor %}
 <div class="pages">
     <div class="row d-flex justify-content-center">
         {% set max_page = (count / 10)|round(0, 'ceil')|int %}
