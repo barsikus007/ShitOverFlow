@@ -35,7 +35,7 @@
             </div>
 
             <div class="row">
-                <div class="col-5">
+                <div class="col-4">
                     {% if question.tags %}
                     {% for tag in question.tags.split() %}
                     <span class="tag badge text-dark">
@@ -45,8 +45,8 @@
                     {% endif %}
                 </div>
 
-                <div class="col-7 d-flex flex-row-reverse">
-                    <a class="link-dark time-and-author" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M %d.%m.%Y') }} by {{ question.author }}</a>
+                <div class="col-8 d-flex flex-row-reverse">
+                    <a class="link-dark time-and-author" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }} by {{ question.author }}</a>
                 </div>
             </div>
         </div>

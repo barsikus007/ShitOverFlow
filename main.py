@@ -97,8 +97,8 @@ async def render_create(request: Request):
 async def post_create(
         name: str = Form(..., min_length=2, max_length=64),
         title: str = Form(..., min_length=3),
-        body: str = Form(..., min_length=1),
-        tags: str = Form(None)
+        body: str = Form(..., min_length=3),
+        tags: str = Form(None, min_length=1)
 ):
     question = QuestionIn()
     question.author = name
@@ -134,7 +134,7 @@ async def render_question(question_id: int, request: Request):
 @app.post('/questions/{question_id}', include_in_schema=False)
 async def post_create(
         question_id: int,
-        name: str = Form(..., min_length=3),
+        name: str = Form(..., min_length=2, max_length=64),
         body: str = Form(..., min_length=3)
 ):
     answer = AnswerIn()

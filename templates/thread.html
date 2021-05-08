@@ -57,7 +57,7 @@
                     {% endif %}
                 </div>
 
-                <div class="col-7 d-flex justify-content-end fw-bold time-and-author" title="{{ question.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px">
+                <div class="col-7 d-flex justify-content-end fw-bold time-and-author" title="{{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px">
                     asked {{ question.human_time }} by {{ question.author }}
                 </div>
             </div>
@@ -93,7 +93,7 @@
 
                     <div class="col-11">
                         <span class="comment-text">{{ comment.body }} </span>
-                        <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M %d.%m.%Y') }}">
+                        <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">
                             – {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}
                         </span>
                     </div>
@@ -177,7 +177,7 @@
                     </div>
                 </div>
 
-                <div class="row d-flex justify-content-end fw-bold time-and-author" title="{{ answer.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
+                <div class="row d-flex justify-content-end fw-bold time-and-author" title="{{ answer.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
                 <br>
 
                 <div class="row comments">
@@ -214,8 +214,8 @@
                             </div>
 
                             <div class="col-11">
-                                <span class="comment-text">{{ comment.body }} </span>
-                                <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M %d.%m.%Y') }}">– {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}</span>
+                                <span class="comment-text">{{ comment.body }}</span>
+                                <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">– {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}</span>
                             </div>
                         </div>
                     </div>
