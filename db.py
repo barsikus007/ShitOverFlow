@@ -40,65 +40,91 @@ class Database:
 
     async def search_questions(self, q):
         """SQL search"""
-        res = await self.query_fetch(
+        questions = await self.query_fetch(
             f"SELECT * FROM questions WHERE title ILIKE '%{q}%' ORDER BY id DESC FETCH NEXT 10 ROWS ONLY",
             []
         )
-        return res if res else None
+        return questions if questions else None
 
     async def get_question(self, user_hash, question_id):
         """SQL get questions with offset of (page-1)*10 or 30"""
-        res = await self.query_fetch(
+        questions = await self.query_fetch(
             'SELECT * FROM questions WHERE id=$1',
             [question_id]
         )
-        for result in res:
-            res_2 = await self.query_fetch(
+        for question in questions:
+            question_score = await self.query_fetch(
                 'SELECT upvote FROM votes WHERE question_id=$1 AND user_hash=$2',
                 [question_id, user_hash]
             )
-            res_3 = await self.query_fetch(
+            question_comments = await self.query_fetch(
                 'SELECT * FROM comments WHERE question_id=$1',
-                [result['id']]
+                [question['id']]
             )
-            result['score_data'] = res_2[0]['upvote'] if res_2 else None
-            result['comments'] = res_3
-            result['human_time'] = humanize.naturaltime(result['created_at'])
-        return res[0] if res else None
+            question['score_data'] = question_score[0]['upvote'] if question_score else None
+            question['comments'] = question_comments
+            for comment in question_comments:
+                comment_score = await self.query_fetch(
+                    'SELECT upvote FROM votes WHERE comment_id=$1 AND user_hash=$2',
+                    [comment['id'], user_hash]
+                )
+                comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
+            question['comments_count'] = len(question_comments)
+            question['human_time'] = humanize.naturaltime(question['created_at'])
+        return questions[0] if questions else None
 
     async def get_questions(self, page):
         """SQL get questions with offset of (page-1)*10 or 30"""
-        res = await self.query_fetch(
+        questions = await self.query_fetch(
             'SELECT * FROM questions ORDER BY id DESC OFFSET $1 FETCH NEXT 10 ROWS ONLY',
             [(page-1) * 10]
         )
-        for result in res:
-            res_2 = await self.query_fetch(
-                'SELECT * FROM answers WHERE question_id=$1',
-                [result['id']]
+        for question in questions:
+            answers_count = await self.query_fetch(
+                'SELECT count(*) FROM answers WHERE question_id=$1',
+                [question['id']]
             )
-            result['answers_count'] = len(res_2)
-        return res if res else None
+            question['answers_count'] = answers_count[0]['count']
+        cnt = await self.query_fetch(
+            'SELECT count(*) FROM questions',
+            [])
+        return {
+            'questions': questions,
+            'count': cnt[0]['count']
+        }
 
     async def get_answers(self, user_hash, question_id, page):
         """SQL get answers with offset of (page-1)*10 or 30"""
-        res = await self.query_fetch(
+        answers = await self.query_fetch(
             'SELECT * FROM answers WHERE question_id=$1 ORDER BY created_at OFFSET $2 FETCH NEXT 10 ROWS ONLY',
             [question_id, (page-1) * 10]
         )
-        for result in res:
-            res_2 = await self.query_fetch(
+        for answer in answers:
+            answer_score = await self.query_fetch(
                 'SELECT upvote FROM votes WHERE answer_id=$1 AND user_hash=$2',
-                [result['id'], user_hash]
+                [answer['id'], user_hash]
             )
-            res_3 = await self.query_fetch(
+            answer_comments = await self.query_fetch(
                 'SELECT * FROM comments WHERE answer_id=$1',
-                [result['id']]
+                [answer['id']]
             )
-            result['score_data'] = res_2[0]['upvote'] if res_2 else None
-            result['comments'] = res_3
-            result['human_time'] = humanize.naturaltime(result['created_at'])
-        return res
+            answer['score_data'] = answer_score[0]['upvote'] if answer_score else None
+            answer['comments'] = answer_comments
+            for comment in answer_comments:
+                comment_score = await self.query_fetch(
+                    'SELECT upvote FROM votes WHERE comment_id=$1 AND user_hash=$2',
+                    [comment['id'], user_hash]
+                )
+                comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
+            answer['comments_count'] = len(answer_comments)
+            answer['human_time'] = humanize.naturaltime(answer['created_at'])
+        cnt = await self.query_fetch(
+            'SELECT count(*) FROM answers WHERE question_id=$1',
+            [question_id])
+        return {
+            'answers': answers,
+            'count': cnt[0]['count']
+        }
 
     async def get_comments(self, user_hash, post_type, post_id, page):
         """SQL get comments by post_type and post_id with offset of (page-1)*5"""
@@ -108,43 +134,48 @@ class Database:
             post_type_id = 'answer_id'
         else:
             raise ValueError
-        res = await self.query_fetch(
+        comments = await self.query_fetch(
             f'SELECT * FROM comments WHERE {post_type_id}=$1 ORDER BY id OFFSET $2 FETCH NEXT 5 ROWS ONLY',
             [post_id, (page-1) * 10]
         )
-        # print(res)
-        for result in res:
-            res_2 = await self.query_fetch(
+        for comment in comments:
+            comment_score = await self.query_fetch(
                 'SELECT upvote FROM votes WHERE comment_id=$1 AND user_hash=$2',
-                [result['id'], user_hash]
+                [comment['id'], user_hash]
             )
-            result['score_data'] = res_2[0]['upvote'] if res_2 else None
-        return res if res else None
+            comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
+        cnt = await self.query_fetch(
+            f'SELECT count(*) FROM comments WHERE {post_type_id}=$1',
+            [post_id])
+        return {
+            'comments': comments,
+            'count': cnt[0]['count']
+        }
 
     async def create_question(self, question: QuestionIn):
-        res = await self.query_fetch(
+        question_id = await self.query_fetch(
             'INSERT INTO questions(author, title, body, tags) VALUES ($1, $2, $3, $4) RETURNING ID',
             [question.author, question.title, question.body, question.tags]
         )
-        return res[0] if res else None
+        return question_id[0] if question_id else None
 
     async def create_answer(self, question_id, answer: AnswerIn):
-        res = await self.query_fetch(
+        answer_id = await self.query_fetch(
             'INSERT INTO answers(question_id, author, body) VALUES ($1, $2, $3) RETURNING ID',
             [question_id, answer.author, answer.body]
         )
-        return res[0] if res else None
+        return answer_id[0] if answer_id else None
 
     async def create_comment(self, post_type, post_id, comment: CommentIn):
         if post_type == PostTypeQA.question:
             post_type_id = 'question_id'
         else:
             post_type_id = 'answer_id'
-        res = await self.query_fetch(
+        comment_id = await self.query_fetch(
             f'INSERT INTO comments({post_type_id}, author, body) VALUES ($1, $2, $3) RETURNING ID',
             [post_id, comment.author, comment.body]
         )
-        return res[0] if res else None
+        return comment_id[0] if comment_id else None
 
     async def set_vote(self, post_type, post_id, action, user_hash, undo=False):
         if post_type == PostType.question:
@@ -159,17 +190,17 @@ class Database:
             action = False
         else:
             raise ValueError
-        res = await self.query_fetch(
+        vote = await self.query_fetch(
             f'SELECT * FROM votes WHERE {post_type_id}=$1 AND user_hash=$2',
             [post_id, user_hash]
         )
         if not undo:
-            if res:
-                if res[0]['upvote'] == action:
+            if vote:
+                if vote[0]['upvote'] == action:
                     return False
                 await self.query_fetch(
                     f'UPDATE votes SET upvote=$1 WHERE id=$2',
-                    [action, res[0]['id']]
+                    [action, vote[0]['id']]
                 )
                 await self.query_fetch(
                     f'UPDATE {post_type_id[:-3]+"s"} SET score=score+$1 WHERE id=$2',
@@ -186,8 +217,8 @@ class Database:
             )
             return True
         else:
-            if res:
-                if res[0]['upvote'] == action:
+            if vote:
+                if vote[0]['upvote'] == action:
                     await self.query_fetch(
                         f'DELETE FROM votes WHERE user_hash=$1',
                         [user_hash]

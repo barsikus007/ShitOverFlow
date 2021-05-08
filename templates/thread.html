@@ -5,6 +5,11 @@
 {% block desc_og %}{{ question.body }}{% endblock %}
 
 {% block main %}
+{% if question.score_data is not none %}
+    {% set score = question.score_data * 1 + (not question.score_data) * -1 %}
+{% else %}
+    {% set score = 0 %}
+{% endif %}
 <div class="d-flex justify-content-between pt-3">
     <h4>{{ question.title }}</h4>
     <div class="pb-3">
@@ -18,7 +23,7 @@
         <div class="vote">
             <div class="row">
                 <button class="arrow-up">
-                    <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="36" height="36"
+                    <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="36" height="36"
                          viewBox="0 0 36 36">
                         <path d="M2 26h32L18 10 2 26z"></path>
                     </svg>
@@ -29,7 +34,7 @@
 
             <div class="row">
                 <button class="arrow-down">
-                    <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="36" height="36"
+                    <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="36" height="36"
                          viewBox="0 0 36 36">
                         <path d="M2 10h32L18 26 2 10z"></path>
                     </svg>
@@ -52,35 +57,34 @@
                     {% endif %}
                 </div>
 
-                <div class="col-7 d-flex justify-content-end fw-bold" title="{{ question.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px">
+                <div class="col-7 d-flex justify-content-end fw-bold time-and-author" title="{{ question.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px">
                     asked {{ question.human_time }} by {{ question.author }}
                 </div>
             </div>
             <br>
             <div class="row comments">
                 {% for comment in question.comments %}
+                    {% if comment.score_data is not none %}
+                        {% set score = comment.score_data * 1 + (not comment.score_data) * -1 %}
+                    {% else %}
+                        {% set score = 0 %}
+                    {% endif %}
                 <hr>
                 <div class="comment row d-flex justify-content-center comment-vote">
                     <div class="col-1">
                         <div class="row">
                             <button class="arrow-up">
-                                <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="18"
-                                     height="18"
-                                     viewBox="0 0 36 36">
+                                <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                     <path d="M2 26h32L18 10 2 26z"></path>
                                 </svg>
                             </button>
                         </div>
 
-                        <div class="d-flex justify-content-center row vote-count comment-vote-count">
-                            {{ comment.score }}
-                        </div>
+                        <div class="d-flex justify-content-center row vote-count comment-vote-count">{{ comment.score }}</div>
 
                         <div class="row">
                             <button class="arrow-down">
-                                <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="18"
-                                     height="18"
-                                     viewBox="0 0 36 36">
+                                <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                     <path d="M2 10h32L18 26 2 10z"></path>
                                 </svg>
                             </button>
@@ -107,34 +111,36 @@
 <br>
 
 {% if answers %}
+{% set max_page = (details.answers_count / 10)|round(0, 'ceil')|int %}
 <div class="answers-block">
     <div class="answer-count">
-        <h3>{{ details.answers_count }} Answer</h3>
+        <h3>{{ details.answers_count }} Answer{% if details.answers_count > 1 %}s{% endif %}</h3>
     </div>
+    {% if max_page > 1 %}
     <br>
     <div class="answer-pages row pages d-flex justify-content-start">
         <div class="col-auto clickable button-prev">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 fill="currentColor"
-                 class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
             </svg>
         </div>
 
-        <div class="col-auto page-number" style="font-size: 16px;">
-            1
-        </div>
+        <div class="col-auto page-number unselectable" style="font-size: 16px;">1/{{ max_page }}</div>
 
         <div class="col-auto clickable button-next">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 fill="currentColor"
-                 class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
             </svg>
         </div>
     </div>
+    {% endif %}
 
     {% for answer in answers %}
+        {% if answer.score_data is not none %}
+            {% set score = answer.score_data * 1 + (not answer.score_data) * -1 %}
+        {% else %}
+            {% set score = 0 %}
+        {% endif %}
     <div class="answer">
         <br>
         <div class="row bg-light rounded p-3">
@@ -142,9 +148,7 @@
                 <div class="vote">
                     <div class="row">
                         <button class="arrow-up">
-                            <svg aria-hidden="true" class="svg-icon iconArrowUpLg" width="32"
-                                 height="32"
-                                 viewBox="0 0 36 36">
+                            <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
                                 <path d="M2 26h32L18 10 2 26z"></path>
                             </svg>
                         </button>
@@ -158,9 +162,7 @@
 
                     <div class="row">
                         <button class="arrow-down">
-                            <svg aria-hidden="true" class="m0 svg-icon iconArrowDownLg" width="32"
-                                 height="32"
-                                 viewBox="0 0 36 36">
+                            <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
                                 <path d="M2 10h32L18 26 2 10z"></path>
                             </svg>
                         </button>
@@ -175,11 +177,16 @@
                     </div>
                 </div>
 
-                <div class="row d-flex justify-content-end fw-bold" title="{{ answer.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
+                <div class="row d-flex justify-content-end fw-bold time-and-author" title="{{ answer.created_at.strftime('%H:%M %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
                 <br>
 
                 <div class="row comments">
                     {% for comment in answer.comments %}
+                        {% if comment.score_data is not none %}
+                            {% set score = comment.score_data * 1 + (not comment.score_data) * -1 %}
+                        {% else %}
+                            {% set score = 0 %}
+                        {% endif %}
                     <hr>
                     <div class="comment">
                         <div class="row">
@@ -187,10 +194,7 @@
                                 <div class="comment-vote">
                                     <div class="row">
                                         <button class="arrow-up">
-                                            <svg aria-hidden="true" class="svg-icon iconArrowUpLg"
-                                                 width="18"
-                                                 height="18"
-                                                 viewBox="0 0 36 36">
+                                            <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                                 <path d="M2 26h32L18 10 2 26z"></path>
                                             </svg>
                                         </button>
@@ -200,10 +204,7 @@
 
                                     <div class="row">
                                         <button class="arrow-down">
-                                            <svg aria-hidden="true"
-                                                 class="m0 svg-icon iconArrowDownLg" width="18"
-                                                 height="18"
-                                                 viewBox="0 0 36 36">
+                                            <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                                 <path d="M2 10h32L18 26 2 10z"></path>
                                             </svg>
                                         </button>
@@ -236,42 +237,47 @@
     </div>
     {% endfor %}
 
+    {% if max_page > 1 %}
     <br>
     <div class="answer-pages row pages d-flex justify-content-start">
         <div class="col-auto clickable button-prev">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  fill="currentColor"
                  class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
             </svg>
         </div>
 
-        <div class="col-auto page-number" style="font-size: 16px;">
-            1
-        </div>
+        <div class="col-auto page-number unselectable" style="font-size: 16px;">1/{{ max_page }}</div>
 
         <div class="col-auto clickable button-next">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                  fill="currentColor"
                  class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
             </svg>
         </div>
     </div>
+    {% endif %}
 
-    <div class="new-answer">
-        <br>
-        <form>
-            <div class="form-floating">
-                <textarea class="form-control" id="answerTextarea" style="height: 150px"></textarea>
-                <label for="answerTextarea">Your answer</label>
-            </div>
-            <div style="padding-top: 15px;">
-                <button type="button" class="btn btn-primary btn-sm">Post your answer</button>
-            </div>
-        </form>
-    </div>
 </div>
 {% endif %}
+
+<div class="new-answer">
+    <br>
+    <form name="create" method="post">
+        <div class="mb-3 form-floating">
+            <input name="name" type="text" class="form-control" id="nameField" placeholder="Alice" required>
+            <label class="" for="nameField">Name</label>
+        </div>
+        <div class="form-floating">
+            <textarea name="body" class="form-control" id="textField" style="height: 150px" placeholder="How to do x?" required></textarea>
+            <label for="textField">Your answer</label>
+        </div>
+        <div style="padding-top: 15px;">
+            <button type="submit" class="btn btn-primary btn-sm" formmethod="post">Post your answer</button>
+        </div>
+    </form>
+</div>
 
 {% endblock %}

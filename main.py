@@ -1,10 +1,11 @@
 import time
 from hashlib import md5
-from typing import Optional, List
+from typing import Optional, List, Dict
 
-from fastapi import FastAPI, Request, Path, Query
+from fastapi import FastAPI, Request, Path, Query, Form
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from config import DB_AUTH
@@ -13,6 +14,7 @@ from models import ResponseID, ResponseSuccess
 from models import VoteType, PostType, PostTypeQA
 from models import QuestionIn, AnswerIn, CommentIn
 from models import QuestionOut, AnswerOut, CommentOut
+from models import Questions, Answers, Comments
 
 db = Db(DB_AUTH)
 
@@ -56,7 +58,25 @@ async def render_index(request: Request):
         {
             'request': request,
             'user_hash': user_hash,
-            'questions': questions,
+            'page': 1,
+            'questions': questions['questions'],
+            'count': questions['count'],
+        }
+    )
+
+
+@app.get('/page/{page}', include_in_schema=False)
+async def render_page(request: Request, page: int):
+    user_hash = get_user_hash(request)
+    questions = await db.get_questions(page)
+    return templates.TemplateResponse(
+        'index.html',
+        {
+            'request': request,
+            'user_hash': user_hash,
+            'page': page,
+            'questions': questions['questions'],
+            'count': questions['count'],
         }
     )
 
@@ -73,6 +93,22 @@ async def render_create(request: Request):
     )
 
 
+@app.post('/questions/ask', include_in_schema=False)
+async def post_create(
+        name: str = Form(..., min_length=2, max_length=64),
+        title: str = Form(..., min_length=3),
+        body: str = Form(..., min_length=1),
+        tags: str = Form(None)
+):
+    question = QuestionIn()
+    question.author = name
+    question.title = title
+    question.body = body
+    question.tags = tags
+    res = await db.create_question(question)
+    return RedirectResponse(f'/questions/{res["id"]}', status_code=303)
+
+
 @app.get('/questions/{question_id}', include_in_schema=False)
 async def render_question(question_id: int, request: Request):
     user_hash = get_user_hash(request)
@@ -81,7 +117,7 @@ async def render_question(question_id: int, request: Request):
         raise HTTPException(status_code=404)
     answers = await db.get_answers(user_hash, question_id, 1)
     comments = await db.get_comments(user_hash, PostType.question, question_id, 1)
-    details = {'answers_count': len(answers)}
+    details = {'answers_count': answers['count']}
     return templates.TemplateResponse(
         'thread.html',
         {
@@ -89,10 +125,23 @@ async def render_question(question_id: int, request: Request):
             'user_hash': user_hash,
             'question_id': question_id,
             'question': question,
-            'answers': answers,
+            'answers': answers['answers'],
             'comments': comments,
             'details': details,
         })
+
+
+@app.post('/questions/{question_id}', include_in_schema=False)
+async def post_create(
+        question_id: int,
+        name: str = Form(..., min_length=3),
+        body: str = Form(..., min_length=3)
+):
+    answer = AnswerIn()
+    answer.author = name
+    answer.body = body
+    await db.create_answer(question_id, answer)
+    return RedirectResponse(f'/questions/{question_id}', status_code=303)
 
 
 @app.get('/api/v1/search/questions', response_model=List[QuestionOut], tags=['question'])
@@ -101,7 +150,7 @@ async def search_questions(q: str):
     return await db.search_questions(q)
 
 
-@app.get('/api/v1/questions', response_model=List[QuestionOut], tags=['question'])
+@app.get('/api/v1/questions', response_model=Questions, tags=['question'])
 async def get_questions(page: Optional[int] = Query(1, ge=1)):
     """Gets all the questions on the site."""
     return await db.get_questions(page)
@@ -117,7 +166,7 @@ async def get_question(
     return await db.get_question(user_hash, question_id)
 
 
-@app.get('/api/v1/questions/{question_id}/answers', response_model=List[AnswerOut], tags=['answer'])
+@app.get('/api/v1/questions/{question_id}/answers', response_model=Answers, tags=['answer'])
 async def get_answers(
         request: Request,
         question_id: int = Path(..., ge=1),
@@ -128,7 +177,7 @@ async def get_answers(
     return await db.get_answers(user_hash, question_id, page)
 
 
-@app.get('/api/v1/{post_type}/{post_id}/comments', response_model=List[CommentOut], tags=['comment'])
+@app.get('/api/v1/{post_type}/{post_id}/comments', response_model=Comments, tags=['comment'])
 async def get_comments(post_type: PostTypeQA, post_id: int, request: Request, page: Optional[int] = 1):
     """Gets the comments on a set of questions and answers."""
     user_hash = get_user_hash(request)

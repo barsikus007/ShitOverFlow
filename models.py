@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from pydantic import BaseModel
@@ -29,6 +29,11 @@ class VoteType(str, Enum):
     downvote = 'downvote'
 
 
+class CommentIn(BaseModel):
+    author: str = 'name'
+    body: str = 'text'
+
+
 class QuestionIn(BaseModel):
     author: str = 'name'
     title: str = 'header'
@@ -39,32 +44,6 @@ class QuestionIn(BaseModel):
 class AnswerIn(BaseModel):
     author: str = 'name'
     body: str = 'text'
-
-
-class CommentIn(BaseModel):
-    author: str = 'name'
-    body: str = 'text'
-
-
-class QuestionOut(BaseModel):
-    id: int = 1
-    author: str = 'name'
-    title: str = 'header'
-    body: str = 'text'
-    tags: Optional[str] = None
-    created_at: datetime
-    score: int = 0
-    score_data: Optional[bool] = None
-
-
-class AnswerOut(BaseModel):
-    id: int = 1
-    question_id: int = 1
-    author: str = 'name'
-    body: str = 'text'
-    created_at: datetime
-    score: int = 0
-    score_data: Optional[bool] = None
 
 
 class CommentOut(BaseModel):
@@ -78,6 +57,31 @@ class CommentOut(BaseModel):
     score_data: Optional[bool] = None
 
 
+class QuestionOut(BaseModel):
+    id: int = 1
+    author: str = 'name'
+    title: str = 'header'
+    body: str = 'text'
+    tags: Optional[str] = None
+    created_at: datetime
+    score: int = 0
+    score_data: Optional[bool] = None
+    comments: Optional[List[CommentOut]]
+    comments_count: Optional[int]
+
+
+class AnswerOut(BaseModel):
+    id: int = 1
+    question_id: int = 1
+    author: str = 'name'
+    body: str = 'text'
+    created_at: datetime
+    score: int = 0
+    score_data: Optional[bool] = None
+    comments: List[CommentOut]
+    comments_count: int = 10
+
+
 class VoteOut(BaseModel):
     id: int = 1
     question_id: Optional[int] = 1
@@ -85,3 +89,18 @@ class VoteOut(BaseModel):
     comment_id: Optional[int] = 1
     user_hash: str
     like: bool
+
+
+class Comments(BaseModel):
+    comments: List[CommentOut]
+    count: int = 10
+
+
+class Questions(BaseModel):
+    questions: List[QuestionOut]
+    count: int = 10
+
+
+class Answers(BaseModel):
+    answers: List[AnswerOut]
+    count: int = 10

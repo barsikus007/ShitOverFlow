@@ -71,31 +71,6 @@ create unique index answers_id_uindex
     await conn.execute(f'''
 create table comments
 (
-    id         serial                  not null
-        constraint comments_pk
-            primary key,
-    post_id    integer                 not null
-        constraint comments_questions_id_fk
-        constraint comments_questions_id_fk
-            references questions,
-    author     text                    not null,
-    body       text                    not null,
-    created_at timestamp default now() not null,
-    score      integer   default 0     not null
-);
-
-alter table comments
-    owner to postgres;
-
-create unique index comments_id_uindex
-    on comments (id);
-''')
-    await conn.execute(f'''
-create type post_type as enum ('question', 'answer');
-''')
-    await conn.execute(f'''
-create table comments
-(
     id          serial                  not null
         constraint comments_pk
             primary key,
