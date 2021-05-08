@@ -5,8 +5,9 @@ from typing import Optional, List, Dict, Union
 from fastapi import FastAPI, Request, Path, Query, Form, Body
 from fastapi.exceptions import HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import RedirectResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
+from aiofiles import open as aopen
 
 from config import DB_AUTH, TOKEN
 from db import Database as Db
@@ -257,6 +258,12 @@ async def delete_post(
     if admin_token != TOKEN:
         raise HTTPException(status_code=403, detail='Incorrect token')
     return {'success': await db.delete_post(post_type, post_id)}
+
+
+@app.get('/about', include_in_schema=False)
+async def about():
+    """???"""
+    return StreamingResponse(open('static/HD.webm', 'rb'), media_type="video/mp4")
 
 
 if __name__ == '__main__':

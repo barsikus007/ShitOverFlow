@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="d-flex justify-content-between pt-3">
-    <h4>Search Results for "{{ query }}" ({% if count == 0 %}No{% else %}{{ count }}{% endif %} Result{% if count != 1 %}s{% endif %})</h4>
+    <h4>Search Results for "{{ query }}" ({% if count == 0 %}No{% else %}{{ count }}{% endif %} result{% if count != 1 %}s{% endif %})</h4>
     <div class="pb-3">
         <button type="button" class="btn btn-primary btn-sm">
             <a class="link-light" href="/questions/ask" style="text-decoration: none;">Ask Question</a>
