@@ -5,30 +5,34 @@
 {% block desc_og %}Stack Overflow | The World’s Largest Online Community for Developers{% endblock %}
 
 {% block main %}
-<div class="d-flex justify-content-between pt-3">
-    <h4 class="pb-3">Create Question</h4>
-</div>
-<div class="bg-light p-5 rounded">
-    <form name="create" method="post">
-        <div class="mb-3 form-row">
-            <label class="" for="nameField">Name</label>
-            <input name="name" type="text" class="form-control" id="nameField" required>
-        </div>
-        <div class="form-row">
-            <label for="titleField">Title</label>
-            <input name="title" type="text" class="form-control" id="titleField" placeholder="e.g Как пропатчить KDE2 под FreeBSD" required>
-        </div>
-        <div class="form-group">
-            <label class="pt-4" for="descriptionField">Description</label>
-            <textarea name="body" class="form-control" id="descriptionField" rows="4" required></textarea>
-        </div>
-        <div class="form-row">
-            <label class="pt-4" for="tagsField">Tags</label>
-            <input name="tags" type="text" class="form-control" id="tagsField" placeholder="python hello-world">
-        </div>
-        <div class="button pt-4">
-            <button type="submit" class="btn btn-primary" formmethod="post">Post your question</button>
-        </div>
-    </form>
-</div>
+    <div class="d-flex justify-content-between pt-3">
+        <h4 class="pb-2">Create Question</h4>
+    </div>
+    <div class="bg-light border rounded p-3 row g-0">
+        <form class="needs-validation" name="create" method="post" novalidate>
+            <div class="mb-3 form-row">
+                <label for="nameField">Name</label>
+                <input name="name" type="text" class="form-control" id="nameField" required>
+                <div class="invalid-feedback">Please choose your name</div>
+            </div>
+            <div class="mb-3 form-row">
+                <label for="titleField">Title</label>
+                <input name="title" type="text" class="form-control" id="titleField" placeholder="e.g Как пропатчить KDE2 под FreeBSD" required>
+                <div class="invalid-feedback">Please choose your name</div>
+            </div>
+            <div class="mb-3 form-group">
+                <label for="descriptionField">Description</label>
+                <textarea name="body" class="form-control" id="descriptionField" rows="4" required></textarea>
+                <div class="invalid-feedback">Please choose your name</div>
+            </div>
+            <div class="mb-3 form-row">
+                <label for="tagsField">Tags</label>
+                <input name="tags" type="text" class="form-control" id="tagsField" placeholder="python hello-world">
+                <div class="invalid-feedback">Please choose your name</div>
+            </div>
+            <div class="mb-3 button">
+                <button type="submit" class="btn btn-primary" formmethod="post">Post your question</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}

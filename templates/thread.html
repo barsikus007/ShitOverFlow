@@ -18,121 +18,125 @@
         </button>
     </div>
 </div>
-<div class="bg-light p-3 rounded row">
-    <div class="col-1 d-flex justify-content-center">
-        <div class="vote">
-            <div class="row">
-                <button class="arrow-up">
-                    <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="36" height="36"
-                         viewBox="0 0 36 36">
-                        <path d="M2 26h32L18 10 2 26z"></path>
-                    </svg>
-                </button>
-            </div>
+<div class="questions-block">
+    <div class="question bg-light border rounded p-3 row g-0" id="question-{{ question.id }}">
+        <div class="col-1 d-flex">
+            <div class="vote">
+                <div class="row">
+                    <button class="arrow-up">
+                        <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="36" height="36"
+                             viewBox="0 0 36 36">
+                            <path d="M2 26h32L18 10 2 26z"></path>
+                        </svg>
+                    </button>
+                </div>
 
-            <div class="row d-flex justify-content-center vote-count">{{ question.score }}</div>
+                <div class="row d-flex justify-content-center vote-count">{{ question.score }}</div>
 
-            <div class="row">
-                <button class="arrow-down">
-                    <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="36" height="36"
-                         viewBox="0 0 36 36">
-                        <path d="M2 10h32L18 26 2 10z"></path>
-                    </svg>
-                </button>
+                <div class="row">
+                    <button class="arrow-down">
+                        <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="36" height="36"
+                             viewBox="0 0 36 36">
+                            <path d="M2 10h32L18 26 2 10z"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-11">
-            <div class="post-cell text-field">{{ question.body }}</div>
-            <br>
-            <div class="row">
-                <div class="col-5">
-                    {% if question.tags %}
-                        {% for tag in question.tags.split() %}
-                            <span class="tag badge text-dark">
-                            {{ tag }}
-                        </span>
+        <div class="col-11">
+                    <div class="post-cell text-field">{{ question.body }}</div>
+                    <br>
+                    <div class="row">
+                        <div class="col-5">
+                            {% if question.tags %}
+                                {% for tag in question.tags.split() %}
+                                    <span class="tag badge text-dark">
+                                    {{ tag }}
+                                </span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="col-7 d-flex justify-content-end fw-bold text-end" title="{{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px">
+                            asked {{ question.human_time }} by {{ question.author }}
+                        </div>
+                    </div>
+                    <br>
+                    <div class="row comments-block">
+                        {% for comment in question.comments %}
+                            {% if comment.score_data is not none %}
+                                {% set score = comment.score_data * 1 + (not comment.score_data) * -1 %}
+                            {% else %}
+                                {% set score = 0 %}
+                            {% endif %}
+                        <hr>
+                        <div class="comment row d-flex justify-content-center comment-vote pb-3" id="comment-{{ comment.id }}">
+                            <div class="col-1">
+                                <div class="row">
+                                    <button class="arrow-up">
+                                        <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                            <path d="M2 26h32L18 10 2 26z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="d-flex justify-content-center row vote-count comment-vote">{{ comment.score }}</div>
+
+                                <div class="row">
+                                    <button class="arrow-down">
+                                        <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                            <path d="M2 10h32L18 26 2 10z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-11 comment-text text-break">
+                                <span class="">{{ comment.body }} </span>
+                                <span class=" fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">
+                                    – {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}
+                                </span>
+                            </div>
+                        </div>
                         {% endfor %}
-                    {% endif %}
-                </div>
-
-                <div class="col-7 d-flex justify-content-end fw-bold time-and-author" title="{{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px">
-                    asked {{ question.human_time }} by {{ question.author }}
-                </div>
-            </div>
-            <br>
-            <div class="row comments">
-                {% for comment in question.comments %}
-                    {% if comment.score_data is not none %}
-                        {% set score = comment.score_data * 1 + (not comment.score_data) * -1 %}
-                    {% else %}
-                        {% set score = 0 %}
-                    {% endif %}
-                <hr>
-                <div class="comment row d-flex justify-content-center comment-vote" id="comment-{{ comment.id }}">
-                    <div class="col-1">
-                        <div class="row">
-                            <button class="arrow-up">
-                                <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
-                                    <path d="M2 26h32L18 10 2 26z"></path>
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div class="d-flex justify-content-center row vote-count comment-vote-count">{{ comment.score }}</div>
-
-                        <div class="row">
-                            <button class="arrow-down">
-                                <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
-                                    <path d="M2 10h32L18 26 2 10z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="col-11">
-                        <span class="comment-text">{{ comment.body }} </span>
-                        <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">
-                            – {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}
-                        </span>
+                        <hr>
+                        <div class="row new-comment clickable comment-button">Add comment</div>
                     </div>
                 </div>
-                {% endfor %}
-                <hr>
-                <div class="new-comment">
-                    <div class="row clickable comment-button">
-                        Add comment
-                    </div>
-                </div>
-            </div>
-        </div>
+    </div>
 </div>
 <br>
 
 {% if answers %}
 {% set max_page = (details.answers_count / 10)|round(0, 'ceil')|int %}
-<div class="answers-block">
     <div class="answer-count">
         <h3>{{ details.answers_count }} Answer{% if details.answers_count > 1 %}s{% endif %}</h3>
     </div>
     {% if max_page > 1 %}
-    <br>
-    <div class="answer-pages row pages d-flex justify-content-start">
-        <div class="col-auto clickable button-prev">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
-            </svg>
-        </div>
-
-        <div class="col-auto page-number unselectable" style="font-size: 16px;">1/{{ max_page }}</div>
-
-        <div class="col-auto clickable button-next">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-            </svg>
-        </div>
-    </div>
+    {% set page=1 %}
+    {% set page_min = page - 4 %}
+    {% set page_max = page + 4 %}
+    <ul class="col-auto pagination">
+        <li class="{% if page <= 1 %}disabled{% endif %} page-item">
+            <a class="page-link" href="/page/{{ page - 1 }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% for page_num in range(1, max_page + 1) %}
+            {% if (page_max > page_num > page_min) or (page_num == max_page)  or (page_num == 1) %}
+                <li class="{% if page == page_num %}active unclickable{% endif %} page-item"><a class="page-link" href="/page/{{ page_num }}">{{ page_num }}</a></li>
+            {% elif page_num == page_max or page_num == page_min %}
+                <li class="page-item disabled"><a class="page-link" href="">...</a></li>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+        <li class="{% if page >= max_page %}disabled{% endif %} page-item">
+            <a class="page-link" href="/page/{{ page + 1 }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
     {% endif %}
 
     {% for answer in answers %}
@@ -141,46 +145,45 @@
         {% else %}
             {% set score = 0 %}
         {% endif %}
-    <div class="answer" id="answer-{{ answer.id }}">
-        <br>
-        <div class="row bg-light rounded p-3">
-            <div class="col-1 d-flex justify-content-center">
-                <div class="vote">
-                    <div class="row">
-                        <button class="arrow-up">
-                            <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
-                                <path d="M2 26h32L18 10 2 26z"></path>
-                            </svg>
-                        </button>
-                    </div>
+<div class="answers-block g-0">
+    <div class="answer bg-light border rounded p-3 row g-0" id="answer-{{ answer.id }}">
+        <div class="col-1 d-flex">
+            <div class="vote">
+                <div class="row">
+                    <button class="arrow-up">
+                        <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
+                            <path d="M2 26h32L18 10 2 26z"></path>
+                        </svg>
+                    </button>
+                </div>
 
-                    <div class="row">
-                        <div class="col-12 d-flex justify-content-center">
-                            <div class="vote-count">{{ answer.score }}</div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <button class="arrow-down">
-                            <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
-                                <path d="M2 10h32L18 26 2 10z"></path>
-                            </svg>
-                        </button>
+                <div class="row">
+                    <div class="col-12 d-flex justify-content-center">
+                        <div class="vote-count">{{ answer.score }}</div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-11">
+                <div class="row">
+                    <button class="arrow-down">
+                        <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="32" height="32" viewBox="0 0 36 36">
+                            <path d="M2 10h32L18 26 2 10z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-11">
                 <div class="row">
                     <div class="answer-cell">
                         <div class="text-field">{{ answer.body }}</div>
                     </div>
                 </div>
 
-                <div class="row d-flex justify-content-end fw-bold time-and-author" title="{{ answer.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
+                <div class="row d-flex justify-content-end fw-bold text-end" title="{{ answer.created_at.strftime('%H:%M:%S %d.%m.%Y') }}" style="font-size: 12px;">answered {{ answer.human_time }} by {{ answer.author }}</div>
                 <br>
 
-                <div class="row comments">
+                <div class="row comments-block">
                     {% for comment in answer.comments %}
                         {% if comment.score_data is not none %}
                             {% set score = comment.score_data * 1 + (not comment.score_data) * -1 %}
@@ -188,76 +191,69 @@
                             {% set score = 0 %}
                         {% endif %}
                     <hr>
-                    <div class="comment" id="comment-{{ comment.id }}">
-                        <div class="row">
-                            <div class="col-1">
-                                <div class="comment-vote">
-                                    <div class="row">
-                                        <button class="arrow-up">
-                                            <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
-                                                <path d="M2 26h32L18 10 2 26z"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-
-                                    <div class="row d-flex justify-content-center vote-count comment-vote-count">{{ comment.score }}</div>
-
-                                    <div class="row">
-                                        <button class="arrow-down">
-                                            <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
-                                                <path d="M2 10h32L18 26 2 10z"></path>
-                                            </svg>
-                                        </button>
-                                    </div>
-
+                    <div class="comment row d-flex justify-content-center comment-vote pb-3" id="comment-{{ comment.id }}">
+                        <div class="col-1">
+                            <div class="comment-vote">
+                                <div class="row">
+                                    <button class="arrow-up">
+                                        <svg class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} svg-icon iconArrowUpLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                            <path d="M2 26h32L18 10 2 26z"></path>
+                                        </svg>
+                                    </button>
                                 </div>
-                            </div>
 
-                            <div class="col-11">
-                                <span class="comment-text">{{ comment.body }}</span>
-                                <span class="comment-text fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">– {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}</span>
+                                <div class="row d-flex justify-content-center vote-count comment-vote">{{ comment.score }}</div>
+
+                                <div class="row">
+                                    <button class="arrow-down">
+                                        <svg class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} m0 svg-icon iconArrowDownLg" aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                            <path d="M2 10h32L18 26 2 10z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+
                             </div>
                         </div>
+
+                        <div class="col-11 comment-text text-break">
+                                <span>{{ comment.body }}</span>
+                                <span class="fw-bold" title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">– {{ comment.author }} {{ comment.created_at.strftime("%b %d '%y at %H:%M") }}</span>
+                            </div>
                     </div>
                     {% endfor %}
                     <hr>
                 </div>
 
-                <div class="new-comment">
-                    <div class="row">
-                        <div class="col-3">
-                            <div class="clickable comment-button">
-                                Add comment
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <div class="row new-comment clickable comment-button">Add comment</div>
             </div>
-        </div>
     </div>
+    <br>
     {% endfor %}
 
     {% if max_page > 1 %}
-    <br>
-    <div class="answer-pages row pages d-flex justify-content-start">
-        <div class="col-auto clickable button-prev">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 fill="currentColor"
-                 class="bi bi-caret-left-fill" viewBox="0 0 16 16">
-                <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
-            </svg>
-        </div>
-
-        <div class="col-auto page-number unselectable" style="font-size: 16px;">1/{{ max_page }}</div>
-
-        <div class="col-auto clickable button-next">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
-                 fill="currentColor"
-                 class="bi bi-caret-right-fill" viewBox="0 0 16 16">
-                <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
-            </svg>
-        </div>
-    </div>
+    {% set page=1 %}
+    {% set page_min = page - 4 %}
+    {% set page_max = page + 4 %}
+    <ul class="col-auto pagination">
+        <li class="{% if page <= 1 %}disabled{% endif %} page-item">
+            <a class="page-link" href="/page/{{ page - 1 }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% for page_num in range(1, max_page + 1) %}
+            {% if (page_max > page_num > page_min) or (page_num == max_page)  or (page_num == 1) %}
+                <li class="{% if page == page_num %}active unclickable{% endif %} page-item"><a class="page-link" href="/page/{{ page_num }}">{{ page_num }}</a></li>
+            {% elif page_num == page_max or page_num == page_min %}
+                <li class="page-item disabled"><a class="page-link" href="">...</a></li>
+            {% else %}
+            {% endif %}
+        {% endfor %}
+        <li class="{% if page >= max_page %}disabled{% endif %} page-item">
+            <a class="page-link" href="/page/{{ page + 1 }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
     {% endif %}
 
 </div>

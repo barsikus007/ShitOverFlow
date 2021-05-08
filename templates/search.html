@@ -14,9 +14,8 @@
     </div>
 </div>
 {% for question in questions %}
-<div class="question bg-light p-2">
-
-    <div class="row">
+<div class="questions-block g-0">
+    <div class="question bg-light border rounded p-3 row" id="question-{{ question.id }}">
         <div class="col counter clickable" onclick="window.location.href='/questions/{{ question.id }}'">
             <div title="{{ question.score }} votes">{{ question.score }}</div>
             <div>votes</div>
@@ -46,7 +45,7 @@
                 </div>
 
                 <div class="col-8 d-flex flex-row-reverse">
-                    <a class="link-dark time-and-author" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }} by {{ question.author }}</a>
+                    <a class="link-dark text-end" href="/questions/{{ question.id }}" style="text-decoration: none;">Created at {{ question.created_at.strftime('%H:%M:%S %d.%m.%Y') }} by {{ question.author }}</a>
                 </div>
             </div>
         </div>
@@ -58,23 +57,28 @@
     <div class="row d-flex justify-content-center">
         {% set max_page = (count / 10)|round(0, 'ceil')|int %}
         {% if max_page == 0 %}{% set page = 0 %}{% endif %}
-        <div class="col-auto clickable button-prev">
-            <svg class="bi bi-caret-left-fill" xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 16 16">
-                <a class="{% if page <= 1 %}unclickable{% endif %}" href="/search?q={{ query }}&page={{ page - 1 }}">
-                    <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"></path>
+        {% set page_min = page - 4 %}
+        {% set page_max = page + 4 %}
+        <ul class="col-auto pagination">
+            <li class="{% if page <= 1 %}disabled{% endif %} page-item">
+                <a class="page-link" href="/search?q={{ query }}&page={{ page - 1 }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
                 </a>
-            </svg>
-        </div>
-
-        <div class="col-auto page-number unselectable" style="font-size: 18px;">{{ page }}/{{ max_page }}</div>
-
-        <div class="col-auto clickable button-next">
-            <svg class="bi bi-caret-right-fill" xmlns="http://www.w3.org/2000/svg" width="23" height="23" fill="currentColor" viewBox="0 0 16 16">
-                <a class="{% if page >= max_page %}unclickable{% endif %}" href="/search?q={{ query }}&page={{ page + 1 }}">
-                    <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"></path>
+            </li>
+            {% for page_num in range(1, max_page + 1) %}
+                {% if (page_max > page_num > page_min) or (page_num == max_page)  or (page_num == 1) %}
+                    <li class="{% if page == page_num %}active unclickable{% endif %} page-item"><a class="page-link" href="/search?q={{ query }}&page={{ page_num }}">{{ page_num }}</a></li>
+                {% elif page_num == page_max or page_num == page_min %}
+                    <li class="page-item disabled"><a class="page-link" href=""><span aria-hidden="true">...</span></a></li>
+                {% else %}
+                {% endif %}
+            {% endfor %}
+            <li class="{% if page >= max_page %}disabled{% endif %} page-item">
+                <a class="page-link" href="/search?q={{ query }}&page={{ page + 1 }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
                 </a>
-            </svg>
-        </div>
+            </li>
+        </ul>
     </div>
 </div>
 {% endblock %}
