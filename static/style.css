@@ -1,9 +1,10 @@
 ::-webkit-scrollbar {
-display: none;
+    display: none;
 }
 
-body {
-    padding-top: 4.5rem;
+html {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .container {
@@ -27,13 +28,13 @@ body {
     font-weight: 400;
 }
 
-.link-dark , .comment-button {
-    font-size: 12px;
-    font-weight: 600;
-}
-
 .comment-text {
     font-size: 12px;
+}
+
+.fine-text {
+    font-size: 12px;
+    font-weight: 600;
 }
 
 .tag {
