@@ -81,7 +81,7 @@ class Database:
         )
         return result[0]['bool'] if result else False
 
-    async def get_question(self, user_hash, question_id, get_all_comments=False):
+    async def get_question(self, user_hash, question_id):
         """SQL get questions with offset of (page-1)*10 or 30"""
         question = await self.query_fetch(
             'SELECT * FROM questions WHERE id=$1',
@@ -92,11 +92,8 @@ class Database:
             'SELECT upvote FROM votes WHERE question_id=$1 AND user_hash=$2',
             [question_id, user_hash]
         )
-        sql_addon = ''
-        if not get_all_comments:
-            sql_addon = ' FETCH NEXT 5 ROWS ONLY'
         question_comments = await self.query_fetch(
-            'SELECT * FROM comments WHERE question_id=$1 ORDER BY created_at' + sql_addon,
+            'SELECT * FROM comments WHERE question_id=$1 ORDER BY created_at FETCH NEXT 5 ROWS ONLY',
             [question['id']]
         )
         cnt_comments = await self.query_fetch(

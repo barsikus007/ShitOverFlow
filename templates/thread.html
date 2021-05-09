@@ -108,16 +108,17 @@
                     {% endfor %}
                 </div>
                 {% if question.comments_count > 5 %}
-                <div class="row comment-button-load fine-text">
+                <div class="row comment-button-load fine-text  pb-3">
+                    <hr>
                     <div class="col-4">
                         <a class="button-comment clickable px-1" onclick="addComments('question', {{ question.id }})">
-                            Load {{ question.comments_count - 5 }} more comments
+                            Load {{ question.comments_count - 5 }} more comment{% if question.comments_count - 5 > 1 %}s{% endif %}
                         </a>
                     </div>
                 </div>
                 {% endif %}
-                <hr>
                 <div class="row comment-button fine-text">
+                    <hr>
                     <div class="col-3">
                         <button class="button-comment" onclick="commentSendPreview('question' , {{ question.id }})">
                             Add comment
@@ -223,7 +224,7 @@
                                     <div class="col-1">
                                         <div class="comment-vote">
                                             <div class="row">
-                                                <button class="{% if score == 1 %}upvote{% elif score == -1 %}unclickable{% endif %} arrow-up" onclick="vote('comment', {{ comment.id }}, 'upvote'{% if score == 1 %}, true{% endif %})">
+                                                <button class="{% if score == 1 %}upvote {% elif score == -1 %}unclickable {% endif %}arrow-up" onclick="vote('comment', {{ comment.id }}, 'upvote'{% if score == 1 %}, true{% endif %})">
                                                     <svg class="svg-icon iconArrowUpLg"
                                                          aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                                         <path d="M2 26h32L18 10 2 26z"></path>
@@ -234,7 +235,7 @@
                                             <div class="row d-flex justify-content-center vote-count comment-vote">{{ comment.score }}</div>
 
                                             <div class="row">
-                                                <button class="{% if score == -1 %}downvote{% elif score == 1 %}unclickable{% endif %} arrow-down" onclick="vote('comment', {{ comment.id }}, 'downvote'{% if score == -1 %}, true{% endif %})">
+                                                <button class="{% if score == -1 %}downvote {% elif score == 1 %}unclickable {% endif %}arrow-down" onclick="vote('comment', {{ comment.id }}, 'downvote'{% if score == -1 %}, true{% endif %})">
                                                     <svg class="m0 svg-icon iconArrowDownLg"
                                                          aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                                         <path d="M2 10h32L18 26 2 10z"></path>
@@ -252,19 +253,19 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                            <hr>
                         </div>
                         {% if answer.comments_count > 5 %}
-                        <div class="row comment-button-load fine-text">
+                        <div class="row comment-button-load fine-text pb-3">
+                            <hr>
                             <div class="col-4">
                                 <a class="button-comment clickable px-1" onclick="addComments('answer', {{ answer.id }})">
-                                    Load {{ answer.comments_count - 5 }} more comments
+                                    Load {{ answer.comments_count - 5 }} more comment{% if answer.comments_count - 5 > 1 %}s{% endif %}
                                 </a>
                             </div>
                         </div>
                         {% endif %}
-
                         <div class="row comment-button fine-text">
+                            <hr>
                             <div class="col-3">
                                 <button class="button-comment" onclick="commentSendPreview('answer', {{ answer.id }})">
                                     Add comment

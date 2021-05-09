@@ -24,15 +24,16 @@ app = FastAPI(
     description='Nice API for shit site'
 )
 
+app.mount('/src', StaticFiles(directory='src'), name='src')
 app.mount('/static', StaticFiles(directory='static'), name='static')
 
 templates = Jinja2Templates(directory='templates')
 
 
 def get_user_hash(request: Request):
-    user_agent = request.headers.get('user-agent')
-    if not user_agent:
-        raise HTTPException(status_code=403, detail='Invalid user agent')
+    user_agent = request.headers.get('user-agent', '')
+    # if not user_agent:
+    #     raise HTTPException(status_code=403, detail='Invalid user agent')
     user_hash = md5(
         f'{request.client.host}{user_agent}'.encode()
     ).hexdigest()
@@ -130,12 +131,10 @@ async def post_create(
 @app.get('/questions/{question_id}', include_in_schema=False)
 async def render_question(
         question_id: int, request: Request,
-        page: Optional[int] = Query(1, ge=1),
-        rc: Optional[str] = Query('')
+        page: Optional[int] = Query(1, ge=1)
 ):
     user_hash = get_user_hash(request)
-    rc = rc.split(',')
-    question = await db.get_question(user_hash, question_id, 'q' in rc)
+    question = await db.get_question(user_hash, question_id)
     if not question:
         raise HTTPException(status_code=404)
     answers = await db.get_answers(user_hash, question_id, page)
