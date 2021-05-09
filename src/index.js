@@ -1,12 +1,12 @@
 'use strict';
 
-function checker(form) {
-    let comment = form.elements.comment.value;
-    let name = form.elements.name.value;
-    if (name.length >= 2 && name.length <= 64 && comment.length >= 3 ) {
-        return true
-    }
-}
+// function checker(form) {
+//     let comment = form.elements.comment.value;
+//     let name = form.elements.name.value;
+//     if (name.length >= 2 && name.length <= 64 && comment.length >= 3 ) {
+//         return true
+//     }
+// }
 
 function addChecker () {
     let forms = document.querySelectorAll('.needs-validation')
@@ -14,14 +14,14 @@ function addChecker () {
     Array.prototype.slice.call(forms)
         .forEach(function (form) {
             form.addEventListener('submit', function (event) {
-                if (!checker(form)){
-                    event.preventDefault()
-                    event.stopPropagation()
-                    Array.prototype.slice.call(form.getElementsByTagName("input"))
-                        .forEach((input) => {
-                            input.classList.add('is-invalid')
-                        })
-                }
+                // if (!checker(form)){
+                //     event.preventDefault()
+                //     event.stopPropagation()
+                //     Array.prototype.slice.call(form.getElementsByTagName("input"))
+                //         .forEach((input) => {
+                //             input.classList.add('is-invalid')
+                //         })
+                // }
                 if (!form.checkValidity()) {
                     event.preventDefault()
                     event.stopPropagation()
