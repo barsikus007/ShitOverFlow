@@ -106,13 +106,22 @@
                             </div>
                         </div>
                     {% endfor %}
-                    <hr>
-                    <div class="row comment-button fine-text">
-                        <div class="col-3">
-                            <button class="button-comment" onclick="commentSendPreview('question' , {{ question.id }})">
-                                Add comment
-                            </button>
-                        </div>
+                </div>
+                {% if question.comments_count > 5 %}
+                <div class="row comment-button-load fine-text">
+                    <div class="col-4">
+                        <a class="button-comment clickable px-1" onclick="addComments('question', {{ question.id }})">
+                            Load {{ question.comments_count - 5 }} more comments
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+                <div class="row comment-button fine-text">
+                    <div class="col-3">
+                        <button class="button-comment" onclick="commentSendPreview('question' , {{ question.id }})">
+                            Add comment
+                        </button>
                     </div>
                 </div>
             </div>
@@ -245,6 +254,15 @@
                             {% endfor %}
                             <hr>
                         </div>
+                        {% if answer.comments_count > 5 %}
+                        <div class="row comment-button-load fine-text">
+                            <div class="col-4">
+                                <a class="button-comment clickable px-1" onclick="addComments('answer', {{ answer.id }})">
+                                    Load {{ answer.comments_count - 5 }} more comments
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
 
                         <div class="row comment-button fine-text">
                             <div class="col-3">
@@ -288,17 +306,19 @@
 
     <div class="new-answer">
         <br>
-        <form name="create" method="post">
+        <form name="create" method="post" class="needs-validation" novalidate>
             <h3>Create answer</h3>
 
             <div class="mb-3 form-floating">
                 <input name="name" type="text" class="form-control" id="nameField" placeholder="Alice" required>
                 <label class="" for="nameField">Name</label>
+                <div class="invalid-feedback">Please choose your name (3-64 symbols)</div>
             </div>
             <div class="form-floating">
                 <textarea name="body" class="form-control" id="textField" style="height: 150px"
                           placeholder="How to do x?" required></textarea>
                 <label for="textField">Your answer</label>
+                <div class="invalid-feedback">Please specify answer</div>
             </div>
             <div style="padding-top: 15px;">
                 <button type="submit" class="btn btn-primary btn-sm" formmethod="post">Post your answer</button>

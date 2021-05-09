@@ -128,13 +128,17 @@ async def post_create(
 
 
 @app.get('/questions/{question_id}', include_in_schema=False)
-async def render_question(question_id: int, request: Request, page: Optional[int] = Query(1, ge=1)):
+async def render_question(
+        question_id: int, request: Request,
+        page: Optional[int] = Query(1, ge=1),
+        rc: Optional[str] = Query('')
+):
     user_hash = get_user_hash(request)
-    question = await db.get_question(user_hash, question_id)
+    rc = rc.split(',')
+    question = await db.get_question(user_hash, question_id, 'q' in rc)
     if not question:
         raise HTTPException(status_code=404)
     answers = await db.get_answers(user_hash, question_id, page)
-    comments = await db.get_comments(user_hash, PostType.question, question_id, 1)
     details = {'answers_count': answers['count']}
     return templates.TemplateResponse(
         'thread.html',
@@ -144,7 +148,6 @@ async def render_question(question_id: int, request: Request, page: Optional[int
             'question_id': question_id,
             'question': question,
             'answers': answers['answers'],
-            'comments': comments,
             'details': details,
             'page': page,
         })
@@ -197,10 +200,10 @@ async def get_answers(
 
 
 @app.get('/api/v1/{post_type}/{post_id}/comments', response_model=Comments, tags=['comment'])
-async def get_comments(post_type: PostTypeQA, post_id: int, request: Request, page: Optional[int] = 1):
+async def get_comments(post_type: PostTypeQA, post_id: int, request: Request, count: Optional[int] = None):
     """Gets the comments on a set of questions and answers."""
     user_hash = get_user_hash(request)
-    return await db.get_comments(user_hash, post_type, post_id, page)
+    return await db.get_comments(user_hash, post_type, post_id, count)
 
 
 @app.post('/api/v1/questions/add', response_model=ResponseID, tags=['question'])

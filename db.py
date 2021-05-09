@@ -81,32 +81,38 @@ class Database:
         )
         return result[0]['bool'] if result else False
 
-    async def get_question(self, user_hash, question_id):
+    async def get_question(self, user_hash, question_id, get_all_comments=False):
         """SQL get questions with offset of (page-1)*10 or 30"""
-        questions = await self.query_fetch(
+        question = await self.query_fetch(
             'SELECT * FROM questions WHERE id=$1',
             [question_id]
         )
-        for question in questions:
-            question_score = await self.query_fetch(
-                'SELECT upvote FROM votes WHERE question_id=$1 AND user_hash=$2',
-                [question_id, user_hash]
+        question = question[0] if question else []
+        question_score = await self.query_fetch(
+            'SELECT upvote FROM votes WHERE question_id=$1 AND user_hash=$2',
+            [question_id, user_hash]
+        )
+        sql_addon = ''
+        if not get_all_comments:
+            sql_addon = ' FETCH NEXT 5 ROWS ONLY'
+        question_comments = await self.query_fetch(
+            'SELECT * FROM comments WHERE question_id=$1 ORDER BY created_at' + sql_addon,
+            [question['id']]
+        )
+        cnt_comments = await self.query_fetch(
+            'SELECT count(*) FROM comments WHERE question_id=$1',
+            [question['id']])
+        question['score_data'] = question_score[0]['upvote'] if question_score else None
+        question['comments'] = question_comments
+        for comment in question_comments:
+            comment_score = await self.query_fetch(
+                'SELECT upvote FROM votes WHERE comment_id=$1 AND user_hash=$2',
+                [comment['id'], user_hash]
             )
-            question_comments = await self.query_fetch(
-                'SELECT * FROM comments WHERE question_id=$1 ORDER BY created_at FETCH NEXT 5 ROWS ONLY',
-                [question['id']]
-            )
-            question['score_data'] = question_score[0]['upvote'] if question_score else None
-            question['comments'] = question_comments
-            for comment in question_comments:
-                comment_score = await self.query_fetch(
-                    'SELECT upvote FROM votes WHERE comment_id=$1 AND user_hash=$2',
-                    [comment['id'], user_hash]
-                )
-                comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
-            question['comments_count'] = len(question_comments)
-            question['human_time'] = humanize.naturaltime(question['created_at'])
-        return questions[0] if questions else None
+            comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
+        question['comments_count'] = cnt_comments[0]['count']
+        question['human_time'] = humanize.naturaltime(question['created_at'])
+        return question
 
     async def get_questions(self, page):
         """SQL get questions with offset of (page-1)*10 or 30"""
@@ -143,6 +149,10 @@ class Database:
                 'SELECT * FROM comments WHERE answer_id=$1 ORDER BY created_at FETCH NEXT 5 ROWS ONLY',
                 [answer['id']]
             )
+
+            cnt_comments = await self.query_fetch(
+                'SELECT count(*) FROM comments WHERE answer_id=$1',
+                [answer['id']])
             answer['score_data'] = answer_score[0]['upvote'] if answer_score else None
             answer['comments'] = answer_comments
             for comment in answer_comments:
@@ -151,7 +161,7 @@ class Database:
                     [comment['id'], user_hash]
                 )
                 comment['score_data'] = comment_score[0]['upvote'] if comment_score else None
-            answer['comments_count'] = len(answer_comments)
+            answer['comments_count'] = cnt_comments[0]['count']
             answer['human_time'] = humanize.naturaltime(answer['created_at'])
         cnt = await self.query_fetch(
             'SELECT count(*) FROM answers WHERE question_id=$1',
@@ -161,7 +171,7 @@ class Database:
             'count': cnt[0]['count']
         }
 
-    async def get_comments(self, user_hash, post_type, post_id, page):
+    async def get_comments(self, user_hash, post_type, post_id, count=None):
         """SQL get comments by post_type and post_id with offset of (page-1)*5"""
         if post_type == PostType.question:
             post_type_id = 'question_id'
@@ -169,9 +179,11 @@ class Database:
             post_type_id = 'answer_id'
         else:
             raise ValueError
+        sql_part = 'FETCH NEXT $2 ROWS ONLY' if count is not None else ''
+        sql_list = [post_id, count] if count is not None else [post_id]
         comments = await self.query_fetch(
-            f'SELECT * FROM comments WHERE {post_type_id}=$1 ORDER BY created_at OFFSET $2 FETCH NEXT 5 ROWS ONLY',
-            [post_id, (page-1) * 5]
+            f'SELECT * FROM comments WHERE {post_type_id}=$1 ORDER BY created_at {sql_part}',
+            sql_list
         )
         for comment in comments:
             comment_score = await self.query_fetch(
