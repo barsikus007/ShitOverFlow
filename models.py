@@ -2,7 +2,7 @@ from enum import Enum
 from typing import Optional, List
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ResponseID(BaseModel):
@@ -30,20 +30,20 @@ class VoteType(str, Enum):
 
 
 class CommentIn(BaseModel):
-    author: str = 'name'
-    body: str = 'text'
+    author: str = Field('name', min_length=2, max_length=64)
+    body: str = Field('text', min_length=3)
 
 
 class QuestionIn(BaseModel):
-    author: str = 'name'
-    title: str = 'header'
-    body: str = 'text'
+    author: str = Field('name', min_length=2, max_length=64)
+    title: str = Field('header')
+    body: str = Field('text', min_length=3)
     tags: Optional[str] = None
 
 
 class AnswerIn(BaseModel):
-    author: str = 'name'
-    body: str = 'text'
+    author: str = Field('name', min_length=2, max_length=64)
+    body: str = Field('text', min_length=3)
 
 
 class CommentOut(BaseModel):

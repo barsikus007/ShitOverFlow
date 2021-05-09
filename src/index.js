@@ -1,11 +1,27 @@
 'use strict';
-(function () {
+
+function checker(form) {
+    let comment = form.elements.comment.value;
+    let name = form.elements.name.value;
+    if (name.length >= 2 && name.length <= 64 && comment.length >= 3 ) {
+        return true
+    }
+}
+
+function addChecker () {
     let forms = document.querySelectorAll('.needs-validation')
 
     Array.prototype.slice.call(forms)
         .forEach(function (form) {
             form.addEventListener('submit', function (event) {
-                // add checking here
+                if (!checker(form)){
+                    event.preventDefault()
+                    event.stopPropagation()
+                    Array.prototype.slice.call(form.getElementsByTagName("input"))
+                        .forEach((input) => {
+                            input.classList.add('is-invalid')
+                        })
+                }
                 if (!form.checkValidity()) {
                     event.preventDefault()
                     event.stopPropagation()
@@ -13,11 +29,11 @@
                 form.classList.add('was-validated')
             }, false)
         })
-})()
+}
 
+addChecker();
 
-Date.prototype.format = function(format)
-{
+Date.prototype.format = function(format) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
@@ -154,7 +170,7 @@ function vote(post_type, post_id, action, undo = false) {
 function commentSendPreview(post_type, post_id) {
     let addButton = document.querySelector(`#${post_type}-${post_id} div.comment-button`);
     addButton.innerHTML =
-        `<form name="create-comment" >
+        `<form name="create-comment" class="needs-validation" novalidate>
     <div class="row form-floating">
         <div class="col-sm-6">
             <input type="text" name="comment" class="form-control" placeholder="Comment" required>
@@ -165,19 +181,21 @@ function commentSendPreview(post_type, post_id) {
             <div class="invalid-feedback">Please specify comment</div>
         </div>
         <div class="col-sm">
-            <button type="button" class="btn btn-primary button-send" onclick="commentPush('${post_type}', ${post_id})">Add comment</button>
+            <button type="submit" class="btn btn-primary button-send" onclick="commentPush('${post_type}', ${post_id})">Add comment</button>
         </div>  
     </div>
  </form>`;
+    addChecker();
 }
 
 function commentPush(post_type, post_id) {
     let commentForm = document.forms['create-comment'];
     let commentText = commentForm.elements.comment.value;
     let commentAuthor = commentForm.elements.name.value;
-    if (!commentForm.checkValidity()) {
-        this.event.preventDefault();
-        this.event.stopPropagation();
+    if (!commentText || !commentAuthor) {
+        return false
+    }
+    if (commentAuthor.length < 2 || commentAuthor.length > 64 || commentText.length < 3 ) {
         return false
     }
     commentForm.classList.add('was-validated');
