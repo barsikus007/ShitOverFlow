@@ -19,10 +19,67 @@
         })
 })()
 
-window.onload = () => {
-    let commentsBlockArray = document.getElementsByClassName('comment-block');
+function addComments(post_type, post_id) {
+    let comments = fetch(`/api/v1/${post_type}/${post_id}/comments`)
+        .then(result => result.json())
+        .then(data => {
+            console.log(data);
+            let commentss = data.comments.slice(5);
+            let comments_block = document.querySelector(`#${post_type}-${post_id} .comments-block`)
+            commentss.forEach((comment) => {
+                let score = 0;
+                if (comment.score_data != null) {
+                    score = comment.score_data * 1 + (!comment.score_data) * -1;
+                }
+                let raw_html = `<div class="comment row d-flex justify-content-center comment-vote pb-3"
+                                     id="comment-{{ comment.id }}">
+                                    <div class="col-1">
+                                        <div class="comment-vote">
+                                            <div class="row">
+                                                <button class="${(score === 1) ? 'upvote ' : (score === -1) ? 'unclickable ' : ''}arrow-up" onclick="vote('comment', ${comment.id}, 'upvote', ${score === 1})">
+                                                    <svg class="svg-icon iconArrowUpLg"
+                                                         aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                                        <path d="M2 26h32L18 10 2 26z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
 
-    for (let comment in commentsBlockArray) {
+                                            <div class="row d-flex justify-content-center vote-count comment-vote">${comment.score}</div>
+
+                                            <div class="row">
+                                                <button class="${(score === -1) ? 'downvote ' : (score === 1) ? 'unclickable ' : ''}arrow-down" onclick="vote('comment', ${comment.id}, 'downvote', ${score === -1})">
+                                                    <svg class="m0 svg-icon iconArrowDownLg"
+                                                         aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
+                                                        <path d="M2 10h32L18 26 2 10z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-11 comment-text text-break">
+                                        <span>${comment.body}</span>
+                                        <span class="fine-text"
+                                              title="{{ comment.created_at.strftime('%H:%M:%S %d.%m.%Y') }}">– ${comment.author}</span>
+                                    </div>
+                                </div>
+                                    <hr>`
+                comments_block.insertAdjacentHTML('beforeend', raw_html);
+            })
+            document.querySelector(`#${post_type}-${post_id} .comment-button-load`).remove()
+        });
+
+
+    console.log(comments);
+}
+
+window.onload = () => {
+    let commentsBlockArray = document.getElementsByClassName('comments-block')
+    console.log(commentsBlockArray[0])
+
+    Array.prototype.forEach.call(commentsBlockArray, (commentBlock) => {
+        let comments = commentBlock.getElementsByClassName('comment');
 
         if (comments.length === 5) {
             commentBlock.getElementsByClassName('comment-button');
