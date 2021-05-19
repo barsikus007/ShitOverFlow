@@ -1,5 +1,8 @@
 'use strict';
+import React from 'react';
+import ReactDOM from 'react-dom';
 
+import CreateThread from "./Thread/CreateThread";
 // function checker(form) {
 //     let comment = form.elements.comment.value;
 //     let name = form.elements.name.value;
@@ -8,7 +11,15 @@
 //     }
 // }
 
-function addChecker () {
+ReactDOM.render(
+    <React.StrictMode>
+        <CreateThread />
+    </React.StrictMode>,
+    document.getElementById('form_block')
+);
+
+
+function addChecker() {
     let forms = document.querySelectorAll('.needs-validation')
 
     Array.prototype.slice.call(forms)
@@ -33,7 +44,7 @@ function addChecker () {
 
 addChecker();
 
-Date.prototype.format = function(format) {
+Date.prototype.format = function (format) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"
     ];
@@ -64,8 +75,8 @@ Date.prototype.format = function(format) {
     format = format.replace(/%m/i, MM);
     format = format.replace(/%SS/i, SS);
     format = format.replace(/%S/i, S);
-    format = format.replace(/%b/i, shortMonthNames[m-1]);
-    format = format.replace(/%B/i, monthNames[m-1]);
+    format = format.replace(/%b/i, shortMonthNames[m - 1]);
+    format = format.replace(/%B/i, monthNames[m - 1]);
 
     return format;
 }
@@ -88,7 +99,7 @@ function addComments(post_type, post_id) {
                     <div class="col-1">
                         <div class="comment-vote">
                             <div class="row">
-                                <button class="${(score === 1) ? 'upvote ' : (score === -1) ? 'unclickable ' : ''}arrow-up" onclick="vote('comment', ${comment.id}, 'upvote'${(score === 1) ? ', true': ''})">
+                                <button class="${(score === 1) ? 'upvote ' : (score === -1) ? 'unclickable ' : ''}arrow-up" onclick="vote('comment', ${comment.id}, 'upvote'${(score === 1) ? ', true' : ''})">
                                     <svg class="svg-icon iconArrowUpLg"
                                          aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                         <path d="M2 26h32L18 10 2 26z"></path>
@@ -99,7 +110,7 @@ function addComments(post_type, post_id) {
                             <div class="row d-flex justify-content-center vote-count comment-vote">${comment.score}</div>
                     
                             <div class="row">
-                                <button class="${(score === -1) ? 'downvote ' : (score === 1) ? 'unclickable ' : ''}arrow-down" onclick="vote('comment', ${comment.id}, 'downvote'${(score === -1) ? ', true': ''})">
+                                <button class="${(score === -1) ? 'downvote ' : (score === 1) ? 'unclickable ' : ''}arrow-down" onclick="vote('comment', ${comment.id}, 'downvote'${(score === -1) ? ', true' : ''})">
                                     <svg class="m0 svg-icon iconArrowDownLg"
                                          aria-hidden="true" width="18" height="18" viewBox="0 0 36 36">
                                         <path d="M2 10h32L18 26 2 10z"></path>
@@ -136,13 +147,13 @@ function vote(post_type, post_id, action, undo = false) {
                     if (action === 'upvote') {
                         upvoteButton.classList.add('upvote')
                         let onclick = upvoteButton.getAttribute('onclick')
-                        upvoteButton.setAttribute('onclick', onclick.slice(0, -1)+', true)');
+                        upvoteButton.setAttribute('onclick', onclick.slice(0, -1) + ', true)');
                         downvoteButton.classList.add('unclickable')
                         document.querySelector(`#${post_type}-${post_id} div.vote-count`).innerHTML = score_cnt + 1;
                     } else {
                         downvoteButton.classList.add('downvote')
                         let onclick = downvoteButton.getAttribute('onclick')
-                        downvoteButton.setAttribute('onclick', onclick.slice(0, -1)+', true)');
+                        downvoteButton.setAttribute('onclick', onclick.slice(0, -1) + ', true)');
                         upvoteButton.classList.add('unclickable')
                         document.querySelector(`#${post_type}-${post_id} div.vote-count`).innerHTML = score_cnt - 1;
                     }
@@ -150,13 +161,13 @@ function vote(post_type, post_id, action, undo = false) {
                     if (action === 'upvote') {
                         upvoteButton.classList.remove('upvote')
                         let onclick = upvoteButton.getAttribute('onclick')
-                        upvoteButton.setAttribute('onclick', onclick.slice(0, -7)+')');
+                        upvoteButton.setAttribute('onclick', onclick.slice(0, -7) + ')');
                         downvoteButton.classList.remove('unclickable')
                         document.querySelector(`#${post_type}-${post_id} div.vote-count`).innerHTML = score_cnt - 1;
                     } else {
                         downvoteButton.classList.remove('downvote')
                         let onclick = downvoteButton.getAttribute('onclick')
-                        downvoteButton.setAttribute('onclick', onclick.slice(0, -7)+')');
+                        downvoteButton.setAttribute('onclick', onclick.slice(0, -7) + ')');
                         upvoteButton.classList.remove('unclickable')
                         document.querySelector(`#${post_type}-${post_id} div.vote-count`).innerHTML = score_cnt + 1;
                     }
@@ -171,7 +182,7 @@ function commentSendPreview(post_type, post_id) {
     let addButton = document.querySelector(`#${post_type}-${post_id} div.comment-button`);
     addButton.innerHTML =
         `<form name="create-comment" class="needs-validation" novalidate>
-    <div class="row form-floating">
+        <div class="row form-floating">
         <div class="col-sm-6">
             <input type="text" name="comment" class="form-control" placeholder="Comment" required>
             <div class="invalid-feedback">Please choose your name (3-64 symbols)</div>
@@ -195,7 +206,7 @@ function commentPush(post_type, post_id) {
     if (!commentText || !commentAuthor) {
         return false
     }
-    if (commentAuthor.length < 2 || commentAuthor.length > 64 || commentText.length < 3 ) {
+    if (commentAuthor.length < 2 || commentAuthor.length > 64 || commentText.length < 3) {
         return false
     }
     commentForm.classList.add('was-validated');
@@ -205,3 +216,6 @@ function commentPush(post_type, post_id) {
         .then(() => window.location.reload());
     return false
 }
+
+
+

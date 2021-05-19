@@ -8,30 +8,8 @@
     <div class="d-flex justify-content-between pt-3">
         <h4 class="pb-2">Create Question</h4>
     </div>
-    <div class="bg-light border rounded p-3 row g-0">
-        <form class="needs-validation" name="create" method="post" novalidate>
-            <div class="mb-3 form-row">
-                <label for="nameField">Name</label>
-                <input name="name" type="text" class="form-control" id="nameField" required>
-                <div class="invalid-feedback">Please choose your name (3-64 symbols)</div>
-            </div>
-            <div class="mb-3 form-row">
-                <label for="titleField">Title</label>
-                <input name="title" type="text" class="form-control" id="titleField" placeholder="e.g How to patch KDE2 for FreeBSD" required>
-                <div class="invalid-feedback">Please input title</div>
-            </div>
-            <div class="mb-3 form-group">
-                <label for="descriptionField">Description</label>
-                <textarea name="body" class="form-control" id="descriptionField" rows="4" required></textarea>
-                <div class="invalid-feedback">Please specify question</div>
-            </div>
-            <div class="mb-3 form-row">
-                <label for="tagsField">Tags</label>
-                <input name="tags" type="text" class="form-control" id="tagsField" placeholder="python hello-world">
-            </div>
-            <div class="mb-3 button">
-                <button type="submit" class="btn btn-primary" formmethod="post">Post your question</button>
-            </div>
-        </form>
+    <div class="bg-light border rounded p-3 row g-0" id="form_block">
+
     </div>
+    <script src="src/Thread/CreateThread.js"></script>
 {% endblock %}
