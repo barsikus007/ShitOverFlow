@@ -1,8 +1,5 @@
 'use strict';
-import React from 'react';
-import ReactDOM from 'react-dom';
 
-import CreateThread from "./Thread/CreateThread";
 // function checker(form) {
 //     let comment = form.elements.comment.value;
 //     let name = form.elements.name.value;
