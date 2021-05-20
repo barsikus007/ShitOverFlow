@@ -1,5 +1,4 @@
 'use strict';
-
 // function checker(form) {
 //     let comment = form.elements.comment.value;
 //     let name = form.elements.name.value;
@@ -14,32 +13,6 @@ ReactDOM.render(
     </React.StrictMode>,
     document.getElementById('form_block')
 );
-
-
-function addChecker() {
-    let forms = document.querySelectorAll('.needs-validation')
-
-    Array.prototype.slice.call(forms)
-        .forEach(function (form) {
-            form.addEventListener('submit', function (event) {
-                // if (!checker(form)){
-                //     event.preventDefault()
-                //     event.stopPropagation()
-                //     Array.prototype.slice.call(form.getElementsByTagName("input"))
-                //         .forEach((input) => {
-                //             input.classList.add('is-invalid')
-                //         })
-                // }
-                if (!form.checkValidity()) {
-                    event.preventDefault()
-                    event.stopPropagation()
-                }
-                form.classList.add('was-validated')
-            }, false)
-        })
-}
-
-addChecker();
 
 Date.prototype.format = function (format) {
     const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -193,7 +166,6 @@ function commentSendPreview(post_type, post_id) {
         </div>  
     </div>
  </form>`;
-    addChecker();
 }
 
 function commentPush(post_type, post_id) {
