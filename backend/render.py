@@ -140,4 +140,4 @@ async def post_create(
 @template_router.get('/about', include_in_schema=False)
 async def about():
     """???"""
-    return StreamingResponse(open('static/about.webm', 'rb'), media_type="video/mp4")
+    return StreamingResponse(open('/static/about.webm', 'rb'), media_type="video/mp4")
