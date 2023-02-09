@@ -1,0 +1,13 @@
+pydantic[dotenv]
+orjson
+jinja2
+uvicorn[standard]
+python-multipart
+fastapi
+humanize
+
+httpx
+
+alembic
+asyncpg
+sqlmodel==0.0.8

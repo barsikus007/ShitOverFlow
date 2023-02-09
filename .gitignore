@@ -1,5 +1,8 @@
-venv
-node_modules
-.idea
-config.py
-test*.py
+venv/
+.idea/
+
+.mypy_cache/
+**/__pycache__
+
+.env
+letsencrypt/

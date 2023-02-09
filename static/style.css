@@ -28,6 +28,12 @@ html {
     font-weight: 400;
 }
 
+.question-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .button-comment {
     text-decoration: none;
     background: none;
@@ -46,6 +52,10 @@ html {
 
 .tag {
     background: #E1ECF4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: inherit;
 }
 
 .upvote {
@@ -72,6 +82,7 @@ html {
 
 .text-field {
     white-space: pre-line;
+    word-wrap: break-word;
 }
 
 .clickable {

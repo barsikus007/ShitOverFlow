@@ -3,11 +3,12 @@ import asyncio
 
 from httpx import AsyncClient
 
+
 async def fetch(url, session):
     response = await session.get(url)
     delay = response.headers.get("X-Process-Time")
     date = response.headers.get("DATE")
-    print("{}:{} with delay {}".format(date, response.url, delay))
+    print(f"{date}:{response.url} with delay {delay}")
 
 
 async def bound_fetch(sem, url, session):
@@ -20,10 +21,9 @@ async def run(r):
     tasks = []
     sem = asyncio.Semaphore(1000)
     async with AsyncClient(timeout=60) as session:
-        for i in range(r):
+        for _ in range(r):
             task = asyncio.ensure_future(bound_fetch(sem, url, session))
             tasks.append(task)
-
         responses = asyncio.gather(*tasks)
         await responses
 

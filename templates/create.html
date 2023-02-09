@@ -5,11 +5,34 @@
 {% block desc_og %}Stack Overflow | The World’s Largest Online Community for Developers{% endblock %}
 
 {% block main %}
-<div class="d-flex justify-content-between pt-3">
-    <h4 class="pb-2">Create Question</h4>
-</div>
-<div class="bg-light border rounded p-3 row g-0" id="form_block">
-
-</div>
-<script src="{{ url_for('src', path='/Thread/CreateThread.js') }}" type="text/babel"></script>
+    <div class="d-flex justify-content-between pt-3">
+        <h4 class="pb-2">Create Question</h4>
+    </div>
+    <div class="bg-light border rounded p-3 row g-0">
+        <form name="create-question" class="needs-validation" method="post">
+            <div class="mb-3 form-row">
+                <label for="nameField">Name</label>
+                <input name="name" type="text" class="form-control" id="nameField" onblur="checkInput(this,2,64)" required>
+                <div class="invalid-feedback">Please choose your name (2-64 chars)</div>
+            </div>
+            <div class="mb-3 form-row">
+                <label for="titleField">Title</label>
+                <input name="title" type="text" class="form-control" id="titleField" placeholder="e.g How to patch KDE2 for FreeBSD" onblur="checkInput(this,3,1024)" required>
+                <div class="invalid-feedback">Please input title (3-1024 chars)</div>
+            </div>
+            <div class="mb-3 form-group">
+                <label for="descriptionField">Description</label>
+                <textarea name="body" class="form-control" id="descriptionField" rows="4" onblur="checkInput(this,3,4096)" required></textarea>
+                <div class="invalid-feedback">Please specify question (3-4096 chars)</div>
+            </div>
+            <div class="mb-3 form-row">
+                <label for="tagsField">Tags</label>
+                <input name="tags" type="text" class="form-control" id="tagsField" placeholder="python hello-world" onblur="checkInput(this,0,1024)">
+                <div class="invalid-feedback">Incorrect tags specify question (1024 chars max)</div>
+            </div>
+            <div class="mb-3 button">
+                <button type="submit" class="btn btn-primary" formmethod="post">Post your question</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}

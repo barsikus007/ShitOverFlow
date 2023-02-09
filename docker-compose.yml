@@ -1,0 +1,66 @@
+services:
+  traefik:
+    # The official v2 Traefik docker image
+    image: traefik:latest
+    container_name: traefik
+    # Enables the web UI and tells Traefik to listen to docker
+    command:
+      # - --log.level=DEBUG
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.permanent=true
+      - --entrypoints.websecure.address=:443
+  
+      - --certificatesresolvers.myresolver.acme.httpchallenge=true
+      - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web
+      # - --certificatesresolvers.myresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.myresolver.acme.email=${ACME_EMAIL:-admin@example.com}
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The HTTPS port
+      - "443:443"
+      # The Web UI (enabled by --api.insecure=true)
+      - "8080:8080"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    env_file:
+      - .env
+
+  backend:
+    image: backend
+    build: backend
+    command: sh -c 'alembic upgrade head && uvicorn main:app --reload --host 0.0.0.0'
+    volumes:
+      - ./backend:/app
+      - ./static:/static
+      - ./templates:/templates
+    env_file:
+      - .env
+    labels:
+      - traefik.http.routers.backend.rule=Host(`${ACME_HOST:-shitoverflow.docker.localhost}`)
+      - traefik.http.services.backend.loadbalancer.server.port=8000
+      - traefik.http.services.backend.loadbalancer.server.scheme=http
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.tls.certresolver=myresolver
+    depends_on:
+      - traefik
+      - postgres
+
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+
+volumes:
+  db-data:
