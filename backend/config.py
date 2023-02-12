@@ -5,7 +5,7 @@ from pydantic import PostgresDsn, BaseSettings
 
 class Settings(BaseSettings):
     DEBUG: bool = False
-    API_V1_STR: str
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
     POOL_SIZE: int = 32
