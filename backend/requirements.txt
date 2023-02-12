@@ -1,13 +1,13 @@
-pydantic[dotenv]
-orjson
-jinja2
-uvicorn[standard]
-python-multipart
-fastapi
-humanize
+pydantic[dotenv]==1.10.4
+orjson==3.8.6
+jinja2==3.1.2
+uvicorn[standard]==0.20.0
+python-multipart==0.0.5
+fastapi==0.91.0
+humanize==4.6.0
 
-httpx
+httpx==0.23.3
 
-alembic
-asyncpg
+alembic==1.9.3
+asyncpg==0.27.0
 sqlmodel==0.0.8
